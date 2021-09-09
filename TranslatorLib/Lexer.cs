@@ -50,7 +50,7 @@ namespace TranslatorLib
                         ++i;
                         break;
                     case LiterType.Delimeter:
-                        if (liter.Character != '0')
+                        if (liter.Character == '0')
                         {
                             return tokens;
                         }
