@@ -20,20 +20,39 @@ namespace TranslatorExplorer
         }
 
         List<Liter> Liters;
+        List<Token> Tokens;
 
         private void ProcessButton_Click(object sender, EventArgs e)
         {
-            switch (ProcessComboBox.SelectedItem)
+            try
             {
-                case "Transpiler":
-                    Liters = Transliterator.Process(SourceRichTextBox.Lines);
+                Liters = Transliterator.Process(SourceRichTextBox.Lines);
+                if (ProcessComboBox.SelectedItem.Equals("Transpiler"))
+                {
                     StringBuilder stringBuilder = new();
                     foreach (var liter in Liters)
                     {
                         stringBuilder.AppendLine(liter.ToString());
                     }
                     ResultRichTextBox.Text = stringBuilder.ToString();
-                    break;
+                    return;
+                }
+
+                Tokens = Lexer.Process(Liters);
+                if (ProcessComboBox.SelectedItem.Equals("Lexer"))
+                {
+                    StringBuilder stringBuilder = new();
+                    foreach (var token in Tokens)
+                    {
+                        stringBuilder.AppendLine(token.ToString());
+                    }
+                    ResultRichTextBox.Text = stringBuilder.ToString();
+                    return;
+                }
+            }
+            catch (Exception exc)
+            {
+                ResultRichTextBox.Text = $"Exception:\n{exc}";
             }
         }
 
@@ -41,12 +60,12 @@ namespace TranslatorExplorer
         {
             switch (ProcessComboBox.SelectedItem)
             {
-                case "Transpiler":
+                case "Transpiler" when Liters != null:
                     Point point = SourceRichTextBox.PointToClient(MousePosition);
                     int index = SourceRichTextBox.GetCharIndexFromPosition(point);
                     if (index < Liters.Count)
                     {
-                        SourceToolTip.SetToolTip(sender as Control, Liters?[index].ToString());
+                        SourceToolTip.SetToolTip(sender as Control, Liters[index].ToString());
                     }
                     break;
             }

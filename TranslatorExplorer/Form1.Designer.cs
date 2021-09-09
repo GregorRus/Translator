@@ -134,7 +134,8 @@ namespace TranslatorExplorer
             this.ProcessComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ProcessComboBox.FormattingEnabled = true;
             this.ProcessComboBox.Items.AddRange(new object[] {
-            "Transpiler"});
+            "Transpiler",
+            "Lexer"});
             this.ProcessComboBox.Location = new System.Drawing.Point(3, 6);
             this.ProcessComboBox.Name = "ProcessComboBox";
             this.ProcessComboBox.Size = new System.Drawing.Size(151, 28);
