@@ -12,6 +12,7 @@ namespace TranslatorLib
         Letter,
         Digit,
         Whitespace,
+        Delimeter,
         Special,
 
         Ignorable,
@@ -45,6 +46,9 @@ namespace TranslatorLib
             Location = location;
         }
 
+        public static Liter CreateEndOfLine(LiterLocation location) => new('n', LiterType.Delimeter, location);
+        public static Liter CreateEndOfFile(LiterLocation location) => new('0', LiterType.Delimeter, location);
+
         public char Character { get; init; }
         public LiterType Type { get; init; }
         public LiterLocation Location { get; init; }
@@ -71,10 +75,12 @@ namespace TranslatorLib
                     LiterLocation location = new(lineIndex, columnIndex);
                     Liters.Add(AnalyzeCharacter(character, location));
                 }
+                Liters.Add(Liter.CreateEndOfLine(new LiterLocation(lineIndex, line.Length + 1)));
 
                 line = streamReader.ReadLine();
                 ++lineIndex;
             }
+            Liters.Add(Liter.CreateEndOfFile(new LiterLocation(lineIndex + 1, 0)));
 
             return Liters;
         }
@@ -93,10 +99,12 @@ namespace TranslatorLib
                     LiterLocation location = new(lineIndex, columnIndex);
                     Liters.Add(AnalyzeCharacter(character, location));
                 }
+                Liters.Add(Liter.CreateEndOfLine(new LiterLocation(lineIndex, line.Length + 1)));
 
                 line = streamReader.ReadLine();
                 ++lineIndex;
             }
+            Liters.Add(Liter.CreateEndOfFile(new LiterLocation(lineIndex + 1, 0)));
 
             return Liters;
         }
@@ -115,7 +123,9 @@ namespace TranslatorLib
                     LiterLocation location = new(lineIndex, columnIndex);
                     Liters.Add(AnalyzeCharacter(character, location));
                 }
+                Liters.Add(Liter.CreateEndOfLine(new LiterLocation(lineIndex, line.Length + 1)));
             }
+            Liters.Add(Liter.CreateEndOfFile(new LiterLocation(lines.Length + 1, 0)));
 
             return Liters;
         }
