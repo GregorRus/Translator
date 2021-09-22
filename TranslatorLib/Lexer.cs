@@ -57,7 +57,26 @@ namespace TranslatorLib
                         ++i;
                         break;
                     case LiterType.Special:
-                        throw new NotImplementedException($"Unsupported character {liter.Character} at {liter.Location}.");
+                        if (liter.Character == '/')
+                        {
+                            liter = liters[++i];
+                            if (liter.Type == LiterType.Special)
+                            {
+                                if (liter.Character == '/')
+                                {
+                                    i = ProcessOnelineComment(liters, i);
+                                }
+                                else if (liter.Character == '*')
+                                {
+                                    i = ProcessMultilineComment(liters, i);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            throw new NotImplementedException($"Unsupported character {liter.Character} at {liter.Location}.");
+                        }
+                        break;
                     case LiterType.Ignorable:
                         ++i;
                         break;
@@ -364,6 +383,35 @@ namespace TranslatorLib
             {
                 return (new Token(contentBuilder.ToString(), TokenType.IdentifierToken), currentPosition);
             }
+        }
+
+        private static int ProcessOnelineComment(List<Liter> liters, int currentPosition)
+        {
+            Liter liter = liters[++currentPosition];
+            while (liter.Type != LiterType.Delimeter && liter.Character != 'n')
+            {
+                liter = liters[++currentPosition];
+            }
+
+            return currentPosition;
+        }
+
+        private static int ProcessMultilineComment(List<Liter> liters, int currentPosition)
+        {
+            Liter liter = liters[++currentPosition];
+
+            cont_comment:
+            while (liter.Type != LiterType.Special || liter.Character != '*')
+            {
+                liter = liters[++currentPosition];
+            }
+            liter = liters[++currentPosition];
+            if (liter.Type != LiterType.Special || liter.Character != '/')
+            {
+                goto cont_comment;
+            }
+
+            return currentPosition;
         }
     }
 }
