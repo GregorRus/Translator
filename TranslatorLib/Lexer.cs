@@ -112,18 +112,18 @@ namespace TranslatorLib
 
             StringBuilder contentBuilder = new();
 
-            Liter currentLiter = liters[currentPosition++];
+            Liter currentLiter = liters[currentPosition];
 
             A:
             switch (currentLiter.Character)
             {
                 case '0':
                     contentBuilder.Append(currentLiter.Character);
-                    currentLiter = liters[currentPosition++];
+                    currentLiter = liters[++currentPosition];
                     goto B;
                 case '1':
                     contentBuilder.Append(currentLiter.Character);
-                    currentLiter = liters[currentPosition++];
+                    currentLiter = liters[++currentPosition];
                     goto D;
                 default:
                     throw new Exception($"Invalid liter {currentLiter}, expected '0' or '1'.");
@@ -134,7 +134,7 @@ namespace TranslatorLib
             {
 
                 contentBuilder.Append(currentLiter.Character);
-                currentLiter = liters[currentPosition++];
+                currentLiter = liters[++currentPosition];
                 goto C;
             }
             else
@@ -147,7 +147,7 @@ namespace TranslatorLib
             {
 
                 contentBuilder.Append(currentLiter.Character);
-                currentLiter = liters[currentPosition++];
+                currentLiter = liters[++currentPosition];
                 goto A;
             }
             else
@@ -160,7 +160,7 @@ namespace TranslatorLib
             {
 
                 contentBuilder.Append(currentLiter.Character);
-                currentLiter = liters[currentPosition++];
+                currentLiter = liters[++currentPosition];
                 goto E;
             }
             else
@@ -173,7 +173,7 @@ namespace TranslatorLib
             {
 
                 contentBuilder.Append(currentLiter.Character);
-                currentLiter = liters[currentPosition++];
+                currentLiter = liters[++currentPosition];
                 goto F_Fin;
             }
             else
@@ -186,7 +186,7 @@ namespace TranslatorLib
             {
 
                 contentBuilder.Append(currentLiter.Character);
-                currentLiter = liters[currentPosition++];
+                currentLiter = liters[++currentPosition];
                 goto G;
             }
             else if (currentLiter.Type == LiterType.Digit)
@@ -203,7 +203,7 @@ namespace TranslatorLib
             {
 
                 contentBuilder.Append(currentLiter.Character);
-                currentLiter = liters[currentPosition++];
+                currentLiter = liters[++currentPosition];
                 goto H;
             }
             else
@@ -216,7 +216,7 @@ namespace TranslatorLib
             {
 
                 contentBuilder.Append(currentLiter.Character);
-                currentLiter = liters[currentPosition++];
+                currentLiter = liters[++currentPosition];
                 goto F_Fin;
             }
             else
@@ -255,26 +255,26 @@ namespace TranslatorLib
 
             StringBuilder contentBuilder = new();
 
-            Liter currentLiter = liters[currentPosition++];
+            Liter currentLiter = liters[currentPosition];
 
         A:
             switch (currentLiter.Character)
             {
                 case 'a':
                     contentBuilder.Append(currentLiter.Character);
-                    currentLiter = liters[currentPosition++];
+                    currentLiter = liters[++currentPosition];
                     goto E_Fin;
                 case 'b':
                     contentBuilder.Append(currentLiter.Character);
-                    currentLiter = liters[currentPosition++];
+                    currentLiter = liters[++currentPosition];
                     goto D_Fin;
                 case 'c':
                     contentBuilder.Append(currentLiter.Character);
-                    currentLiter = liters[currentPosition++];
+                    currentLiter = liters[++currentPosition];
                     goto C_Fin;
                 case 'd':
                     contentBuilder.Append(currentLiter.Character);
-                    currentLiter = liters[currentPosition++];
+                    currentLiter = liters[++currentPosition];
                     goto B_Fin;
                 default:
                     throw new Exception($"Invalid liter {currentLiter}, expected 'a', 'b', 'c' or 'd'.");
@@ -287,19 +287,19 @@ namespace TranslatorLib
                 {
                     case 'a':
                         contentBuilder.Append(currentLiter.Character);
-                        currentLiter = liters[currentPosition++];
+                        currentLiter = liters[++currentPosition];
                         goto E_Fin;
                     case 'b':
                         contentBuilder.Append(currentLiter.Character);
-                        currentLiter = liters[currentPosition++];
+                        currentLiter = liters[++currentPosition];
                         goto D_Fin;
                     case 'c':
                         contentBuilder.Append(currentLiter.Character);
-                        currentLiter = liters[currentPosition++];
+                        currentLiter = liters[++currentPosition];
                         goto C_Fin;
                     case 'd':
                         contentBuilder.Append(currentLiter.Character);
-                        currentLiter = liters[currentPosition++];
+                        currentLiter = liters[++currentPosition];
                         goto B_Fin;
                     default:
                         throw new Exception($"Invalid liter {currentLiter}, expected 'a', 'b', 'c' or 'd'.");
@@ -317,15 +317,15 @@ namespace TranslatorLib
                 {
                     case 'a':
                         contentBuilder.Append(currentLiter.Character);
-                        currentLiter = liters[currentPosition++];
+                        currentLiter = liters[++currentPosition];
                         goto E_Fin;
                     case 'b':
                         contentBuilder.Append(currentLiter.Character);
-                        currentLiter = liters[currentPosition++];
+                        currentLiter = liters[++currentPosition];
                         goto D_Fin;
                     case 'c':
                         contentBuilder.Append(currentLiter.Character);
-                        currentLiter = liters[currentPosition++];
+                        currentLiter = liters[++currentPosition];
                         goto C_Fin;
                     default:
                         throw new Exception($"Invalid liter {currentLiter}, expected 'a', 'b', or 'c'.");
@@ -343,11 +343,11 @@ namespace TranslatorLib
                 {
                     case 'a':
                         contentBuilder.Append(currentLiter.Character);
-                        currentLiter = liters[currentPosition++];
+                        currentLiter = liters[++currentPosition];
                         goto E_Fin;
                     case 'b':
                         contentBuilder.Append(currentLiter.Character);
-                        currentLiter = liters[currentPosition++];
+                        currentLiter = liters[++currentPosition];
                         goto D_Fin;
                     default:
                         throw new Exception($"Invalid liter {currentLiter}, expected 'a', or 'b'.");
@@ -364,7 +364,7 @@ namespace TranslatorLib
                 if (currentLiter.Character == 'a')
                 {
                     contentBuilder.Append(currentLiter.Character);
-                    currentLiter = liters[currentPosition++];
+                    currentLiter = liters[++currentPosition];
                     if (currentLiter.Type == LiterType.Digit)
                     {
                         goto E_Fin;
