@@ -35,7 +35,7 @@ namespace TranslatorExplorer
                         stringBuilder.AppendLine(liter.ToString());
                     }
                     ResultRichTextBox.Text = stringBuilder.ToString();
-                    return;
+                    goto success;
                 }
 
                 Tokens = Lexer.Process(Liters);
@@ -47,11 +47,17 @@ namespace TranslatorExplorer
                         stringBuilder.AppendLine(token.ToString());
                     }
                     ResultRichTextBox.Text = stringBuilder.ToString();
-                    return;
+                    goto success;
                 }
+
+                success:
+                StageToolStripStatusLabel.Text = "Работа выполнена без ошибок";
+                StageStatusStrip.BackColor = Color.FromArgb(0xFF, 0xB1, 0xFF, 0x54);
             }
             catch (Exception exc)
             {
+                StageToolStripStatusLabel.Text = "Есть ошибка";
+                StageStatusStrip.BackColor = Color.FromArgb(0xFF, 0xFF, 0x5C, 0x52);
                 ResultRichTextBox.Text = $"Exception:\n{exc}";
             }
         }

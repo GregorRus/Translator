@@ -39,8 +39,13 @@ namespace TranslatorExplorer
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.ProcessComboBox = new System.Windows.Forms.ComboBox();
             this.SourceToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.StageStatusStrip = new System.Windows.Forms.StatusStrip();
+            this.StageToolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
+            this.StageStatusStrip.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // SourceRichTextBox
@@ -51,7 +56,7 @@ namespace TranslatorExplorer
             this.SourceRichTextBox.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.SourceRichTextBox.Location = new System.Drawing.Point(3, 39);
             this.SourceRichTextBox.Name = "SourceRichTextBox";
-            this.SourceRichTextBox.Size = new System.Drawing.Size(394, 364);
+            this.SourceRichTextBox.Size = new System.Drawing.Size(391, 334);
             this.SourceRichTextBox.TabIndex = 0;
             this.SourceRichTextBox.Text = "";
             this.SourceRichTextBox.MouseHover += new System.EventHandler(this.SourceRichTextBox_MouseHover);
@@ -60,17 +65,17 @@ namespace TranslatorExplorer
             // 
             this.ResultRichTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ResultRichTextBox.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.ResultRichTextBox.Location = new System.Drawing.Point(403, 39);
+            this.ResultRichTextBox.Location = new System.Drawing.Point(400, 39);
             this.ResultRichTextBox.Name = "ResultRichTextBox";
             this.ResultRichTextBox.ReadOnly = true;
-            this.ResultRichTextBox.Size = new System.Drawing.Size(394, 364);
+            this.ResultRichTextBox.Size = new System.Drawing.Size(391, 334);
             this.ResultRichTextBox.TabIndex = 1;
             this.ResultRichTextBox.Text = "";
             // 
             // ResultLabel
             // 
             this.ResultLabel.AutoSize = true;
-            this.ResultLabel.Location = new System.Drawing.Point(403, 0);
+            this.ResultLabel.Location = new System.Drawing.Point(400, 0);
             this.ResultLabel.Name = "ResultLabel";
             this.ResultLabel.Padding = new System.Windows.Forms.Padding(8);
             this.ResultLabel.Size = new System.Drawing.Size(65, 36);
@@ -109,13 +114,13 @@ namespace TranslatorExplorer
             this.tableLayoutPanel1.Controls.Add(this.ResultRichTextBox, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.flowLayoutPanel1, 1, 2);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 3;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 36F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 44F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(800, 450);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(794, 420);
             this.tableLayoutPanel1.TabIndex = 5;
             // 
             // flowLayoutPanel1
@@ -123,9 +128,9 @@ namespace TranslatorExplorer
             this.flowLayoutPanel1.Controls.Add(this.ProcessComboBox);
             this.flowLayoutPanel1.Controls.Add(this.ProcessButton);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(403, 409);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(400, 379);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(394, 38);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(391, 38);
             this.flowLayoutPanel1.TabIndex = 5;
             // 
             // ProcessComboBox
@@ -145,18 +150,53 @@ namespace TranslatorExplorer
             // 
             this.SourceToolTip.AutomaticDelay = 100;
             // 
+            // StageStatusStrip
+            // 
+            this.StageStatusStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.StageStatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.StageToolStripStatusLabel});
+            this.StageStatusStrip.Location = new System.Drawing.Point(0, 426);
+            this.StageStatusStrip.Name = "StageStatusStrip";
+            this.StageStatusStrip.Size = new System.Drawing.Size(800, 24);
+            this.StageStatusStrip.TabIndex = 0;
+            this.StageStatusStrip.Text = "statusStrip1";
+            // 
+            // StageToolStripStatusLabel
+            // 
+            this.StageToolStripStatusLabel.Name = "StageToolStripStatusLabel";
+            this.StageToolStripStatusLabel.Size = new System.Drawing.Size(0, 18);
+            // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 1;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel1, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.StageStatusStrip, 0, 1);
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 2;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(800, 450);
+            this.tableLayoutPanel2.TabIndex = 6;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.tableLayoutPanel1);
+            this.Controls.Add(this.tableLayoutPanel2);
             this.Name = "Form1";
             this.Text = "Form1";
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel1.PerformLayout();
+            this.StageStatusStrip.ResumeLayout(false);
+            this.StageStatusStrip.PerformLayout();
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -172,6 +212,9 @@ namespace TranslatorExplorer
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.ComboBox ProcessComboBox;
         private System.Windows.Forms.ToolTip SourceToolTip;
+        private System.Windows.Forms.StatusStrip StageStatusStrip;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.ToolStripStatusLabel StageToolStripStatusLabel;
     }
 }
 
