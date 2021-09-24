@@ -7,14 +7,17 @@ namespace Translator
 {
     class Program
     {
-        static async void Main(string[] args)
+        static void Main(string[] args)
         {
             string filename = args[1];
             using StreamReader streamReader = new(filename);
 
-            var liters = await Transliterator.ProcessAsync(streamReader);
+            Transliterator transliterator = new(streamReader);
+            Lexer lexer = new(transliterator);
 
-            foreach (var liter in liters)
+            for (var liter = lexer.TakeElement();
+                liter.Type != TokenType.EndOfFile;
+                liter = lexer.TakeElement())
             {
                 Console.WriteLine(liter);
             }
