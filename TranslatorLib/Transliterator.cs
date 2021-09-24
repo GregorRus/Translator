@@ -37,7 +37,7 @@ namespace TranslatorLib
         }
     }
 
-    public struct Liter
+    public struct Liter : IStageElement
     {
         public Liter(char character, LiterType type, LiterLocation location) : this()
         {
@@ -46,8 +46,8 @@ namespace TranslatorLib
             Location = location;
         }
 
-        public static Liter CreateEndOfLine(LiterLocation location) => new('n', LiterType.Delimeter, location);
-        public static Liter CreateEndOfFile(LiterLocation location) => new('0', LiterType.Delimeter, location);
+        public static Liter CreateEndOfLine(LiterLocation location) => new('\n', LiterType.Delimeter, location);
+        public static Liter CreateEndOfFile(LiterLocation location) => new('\0', LiterType.Delimeter, location);
 
         public char Character { get; init; }
         public LiterType Type { get; init; }
@@ -55,93 +55,82 @@ namespace TranslatorLib
 
         public override string ToString()
         {
-            return $"['{Character}', {Type}, {Location}]";
+            return $"['{SanitizedCharacter}', {Type}, {Location}]";
         }
+
+        public bool IsLast()
+        {
+            return Character == '\0' && Type == LiterType.Delimeter;
+        }
+
+        public string SanitizedCharacter => Character switch
+        {
+            '\n' => "end_of_line",
+            '\0' => "end_of_file",
+            _ => Character.ToString()
+        };
     }
 
-    public static class Transliterator
+    public class Transliterator : IStage<Liter>
     {
-        public static List<Liter> Process(StreamReader streamReader)
+        private readonly TextReader TextReader;
+        private int LineIndex;
+        private int ColumnIndex;
+
+        private Liter CurrentLiter;
+
+        public Liter CurrentElement => CurrentLiter;
+
+        public Transliterator(TextReader textReader)
         {
-            List<Liter> Liters = new();
-
-            string line = streamReader.ReadLine();
-            int lineIndex = 1;
-            while (line != null)
-            {
-                for (int columnIndex = 1; columnIndex <= line.Length; ++columnIndex)
-                {
-                    char character = line[columnIndex - 1];
-                    LiterLocation location = new(lineIndex, columnIndex);
-                    Liters.Add(AnalyzeCharacter(character, location));
-                }
-                Liters.Add(Liter.CreateEndOfLine(new LiterLocation(lineIndex, line.Length + 1)));
-
-                line = streamReader.ReadLine();
-                ++lineIndex;
-            }
-            Liters.Add(Liter.CreateEndOfFile(new LiterLocation(lineIndex + 1, 0)));
-
-            return Liters;
+            TextReader = textReader;
+            LineIndex = 1;
+            ColumnIndex = 1;
         }
 
-        public static async Task<List<Liter>> ProcessAsync(StreamReader streamReader)
+        public Liter TakeElement()
         {
-            List<Liter> Liters = new();
+            LiterLocation location = new(LineIndex, ColumnIndex);
+            int character = TextReader.Read();
 
-            string line = await streamReader.ReadLineAsync();
-            int lineIndex = 1;
-            while (line != null)
+            ++ColumnIndex;
+            if (character == '\n')
             {
-                for (int columnIndex = 1; columnIndex <= line.Length; ++columnIndex)
-                {
-                    char character = line[columnIndex - 1];
-                    LiterLocation location = new(lineIndex, columnIndex);
-                    Liters.Add(AnalyzeCharacter(character, location));
-                }
-                Liters.Add(Liter.CreateEndOfLine(new LiterLocation(lineIndex, line.Length + 1)));
+                ++LineIndex;
+                ColumnIndex = 0;
 
-                line = streamReader.ReadLine();
-                ++lineIndex;
+                CurrentLiter = Liter.CreateEndOfLine(location);
             }
-            Liters.Add(Liter.CreateEndOfFile(new LiterLocation(lineIndex + 1, 0)));
+            else if (character == -1)
+            {
+                CurrentLiter = Liter.CreateEndOfFile(location);
+            }
+            else
+            {
+                CurrentLiter = AnalyzeCharacter((char)character, location);
+            }
 
-            return Liters;
+            return CurrentLiter;
         }
 
-        public static List<Liter> Process(string[] lines)
+        private static LiterType SwitchLiterType(char character)
         {
-            List<Liter> Liters = new();
-
-            for (int lineIndex = 1; lineIndex <= lines.Length; ++lineIndex)
-            {
-                string line = lines[lineIndex - 1];
-
-                for (int columnIndex = 1; columnIndex <= line.Length; ++columnIndex)
-                {
-                    char character = line[columnIndex - 1];
-                    LiterLocation location = new(lineIndex, columnIndex);
-                    Liters.Add(AnalyzeCharacter(character, location));
-                }
-                Liters.Add(Liter.CreateEndOfLine(new LiterLocation(lineIndex, line.Length + 1)));
-            }
-            Liters.Add(Liter.CreateEndOfFile(new LiterLocation(lines.Length + 1, 0)));
-
-            return Liters;
-        }
-
-        private static Liter AnalyzeCharacter(char character, LiterLocation location)
-        {
-            LiterType type = character switch
+            return character switch
             {
                 char c when char.IsLetter(c) => LiterType.Letter,
                 char c when char.IsDigit(c) => LiterType.Digit,
                 char c when char.IsWhiteSpace(c) => LiterType.Whitespace,
                 char c when "*!?&|^$;:.,()[]{}-+/=".Contains(c) => LiterType.Special,
+                char c when "\n\0".Contains(c) => LiterType.Delimeter,
 
                 _ => LiterType.Other,
             };
-            return new Liter(character, type, location);
+
+        }
+
+        private static Liter AnalyzeCharacter(char character, LiterLocation location)
+        {
+            return new Liter(character, SwitchLiterType(character), location);
         }
     }
 }
