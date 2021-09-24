@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -19,38 +20,37 @@ namespace TranslatorExplorer
             InitializeComponent();
         }
 
-        List<Liter> Liters;
-        List<Token> Tokens;
-
         private void ProcessButton_Click(object sender, EventArgs e)
         {
+            static string ProcessFullText<E>(IStage<E> stage) where E : IStageElement
+            {
+                StringBuilder stringBuilder = new();
+                for (E element = stage.TakeElement(); ;
+                    element = stage.TakeElement())
+                {
+                    stringBuilder.AppendLine(element.ToString());
+                    if (element.IsLast())
+                    {
+                        break;
+                    }
+                }
+                return stringBuilder.ToString();
+            }
+
             try
             {
-                Liters = Transliterator.Process(SourceRichTextBox.Lines);
-                if (ProcessComboBox.SelectedItem.Equals("Transpiler"))
-                {
-                    StringBuilder stringBuilder = new();
-                    foreach (var liter in Liters)
-                    {
-                        stringBuilder.AppendLine(liter.ToString());
-                    }
-                    ResultRichTextBox.Text = stringBuilder.ToString();
-                    goto success;
-                }
+                using StringReader reader = new(SourceRichTextBox.Text);
 
-                Tokens = Lexer.Process(Liters);
-                if (ProcessComboBox.SelectedItem.Equals("Lexer"))
-                {
-                    StringBuilder stringBuilder = new();
-                    foreach (var token in Tokens)
-                    {
-                        stringBuilder.AppendLine(token.ToString());
-                    }
-                    ResultRichTextBox.Text = stringBuilder.ToString();
-                    goto success;
-                }
+                Transliterator transliterator = new(reader);
+                Lexer lexer = new(transliterator);
 
-                success:
+                ResultRichTextBox.Text = ProcessComboBox.SelectedItem switch
+                {
+                    "Transliterator" => ProcessFullText(transliterator),
+                    "Lexer" => ProcessFullText(lexer),
+                    _ => throw new NotImplementedException()
+                };
+
                 StageToolStripStatusLabel.Text = "Работа выполнена без ошибок";
                 StageStatusStrip.BackColor = Color.FromArgb(0xFF, 0xB1, 0xFF, 0x54);
             }
@@ -64,17 +64,17 @@ namespace TranslatorExplorer
 
         private void SourceRichTextBox_MouseHover(object sender, EventArgs e)
         {
-            switch (ProcessComboBox.SelectedItem)
-            {
-                case "Transpiler" when Liters != null:
-                    Point point = SourceRichTextBox.PointToClient(MousePosition);
-                    int index = SourceRichTextBox.GetCharIndexFromPosition(point);
-                    if (index < Liters.Count)
-                    {
-                        SourceToolTip.SetToolTip(sender as Control, Liters[index].ToString());
-                    }
-                    break;
-            }
+            //switch (ProcessComboBox.SelectedItem)
+            //{
+            //    case "Transpiler":
+            //        Point point = SourceRichTextBox.PointToClient(MousePosition);
+            //        int index = SourceRichTextBox.GetCharIndexFromPosition(point);
+            //        if (index < Liters.Count)
+            //        {
+            //            SourceToolTip.SetToolTip(sender as Control, Liters[index].ToString());
+            //        }
+            //        break;
+            //}
         }
     }
 }

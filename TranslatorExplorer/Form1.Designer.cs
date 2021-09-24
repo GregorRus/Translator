@@ -139,7 +139,7 @@ namespace TranslatorExplorer
             this.ProcessComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ProcessComboBox.FormattingEnabled = true;
             this.ProcessComboBox.Items.AddRange(new object[] {
-            "Transpiler",
+            "Transliterator",
             "Lexer"});
             this.ProcessComboBox.Location = new System.Drawing.Point(3, 6);
             this.ProcessComboBox.Name = "ProcessComboBox";
@@ -155,16 +155,16 @@ namespace TranslatorExplorer
             this.StageStatusStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.StageStatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.StageToolStripStatusLabel});
-            this.StageStatusStrip.Location = new System.Drawing.Point(0, 426);
+            this.StageStatusStrip.Location = new System.Drawing.Point(0, 428);
             this.StageStatusStrip.Name = "StageStatusStrip";
-            this.StageStatusStrip.Size = new System.Drawing.Size(800, 24);
+            this.StageStatusStrip.Size = new System.Drawing.Size(800, 22);
             this.StageStatusStrip.TabIndex = 0;
             this.StageStatusStrip.Text = "statusStrip1";
             // 
             // StageToolStripStatusLabel
             // 
             this.StageToolStripStatusLabel.Name = "StageToolStripStatusLabel";
-            this.StageToolStripStatusLabel.Size = new System.Drawing.Size(0, 18);
+            this.StageToolStripStatusLabel.Size = new System.Drawing.Size(0, 16);
             // 
             // tableLayoutPanel2
             // 
