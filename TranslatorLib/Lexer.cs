@@ -9,10 +9,11 @@ namespace TranslatorLib
     public enum TokenType
     {
         ConstantToken,
-        IdentifierToken
+        IdentifierToken,
+        EndOfFile
     }
 
-    public class Token
+    public class Token : IStageElement
     {
         public Token(string content, TokenType type)
         {
@@ -23,77 +24,113 @@ namespace TranslatorLib
         public string Content { get; init; }
         public TokenType Type { get; init; }
 
+        public bool IsLast()
+        {
+            return Type == TokenType.EndOfFile;
+        }
+
+        //public LiterLocation Begin { get; init; }
+        //public LiterLocation End { get; init; }
+
         public override string ToString()
         {
-            return $"[\"{Content}\", {Type}]";
+            return $"[\"{SanitizedContent}\", {Type}]";
         }
+
+        public string SanitizedContent => Type switch
+        {
+            TokenType.EndOfFile => "end_of_file",
+            _ => Content
+        };
     }
 
-    public static class Lexer
+    public class Lexer : IStage<Token>
     {
-        public static List<Token> Process(List<Liter> liters)
+        private readonly Transliterator Transliterator;
+
+        private Token? CurrentToken;
+
+        public Token CurrentElement => CurrentToken ?? throw new InvalidOperationException("Invalid operation performed: no available current element before TakeElement call.");
+
+        public Lexer(Transliterator transliterator)
         {
-            List<Token> tokens = new();
-            for (int i = 0; i < liters.Count;)
+            Transliterator = transliterator;
+        }
+
+        public Token TakeElement()
+        {
+            Liter liter = Transliterator.TakeElement();
+
+            bool notPrepared = true;
+            while (notPrepared)
             {
-                Liter liter = liters[i];
-                Token token = null;
+                // Skip ignorable characters
+                while (liter.Type == LiterType.Whitespace ||
+                    liter.Type == LiterType.Ignorable)
+                {
+                    liter = Transliterator.TakeElement();
+                }
+
                 switch (liter.Type)
                 {
-                    case LiterType.Letter:
-                        (token, i) = ProcessIdentifierToken(liters, i);
-                        break;
-                    case LiterType.Digit:
-                        (token, i) = ProcessConstantToken(liters, i);
-                        break;
-                    case LiterType.Whitespace:
-                        ++i;
-                        break;
                     case LiterType.Delimeter:
-                        if (liter.Character == '0')
+                        if (liter.Character == '\0')
                         {
-                            return tokens;
+                            return new(liter.Character.ToString(), TokenType.EndOfFile);
                         }
-                        ++i;
                         break;
+
                     case LiterType.Special:
                         if (liter.Character == '/')
                         {
-                            liter = liters[++i];
+                            liter = Transliterator.TakeElement();
                             if (liter.Type == LiterType.Special)
                             {
                                 if (liter.Character == '/')
                                 {
-                                    i = ProcessOnelineComment(liters, i);
+                                    PassOnelineComment();
                                 }
                                 else if (liter.Character == '*')
                                 {
-                                    i = ProcessMultilineComment(liters, i);
+                                    PassMultilineComment();
                                 }
                             }
                         }
                         else
                         {
-                            throw new NotImplementedException($"Unsupported character {liter.Character} at {liter.Location}.");
+                            throw new NotImplementedException($"Unsupported character '{liter.SanitizedCharacter}' at {liter.Location}.");
                         }
                         break;
-                    case LiterType.Ignorable:
-                        ++i;
-                        break;
+
                     case LiterType.Prohibited:
                     case LiterType.Other:
+                        throw new NotImplementedException($"Unsupported character '{liter.SanitizedCharacter}' at {liter.Location}.");
+
                     default:
-                        throw new Exception($"Invalid character {liter.Character} at {liter.Location}.");
+                        notPrepared = false;
+                        break;
                 }
-                if (token != null)
+                if (notPrepared)
                 {
-                    tokens.Add(token);
+                    liter = Transliterator.TakeElement();
                 }
             }
-            return tokens;
+
+            switch (liter.Type)
+            {
+                case LiterType.Letter:
+                    CurrentToken = ProcessIdentifierToken();
+                    return CurrentElement;
+
+                case LiterType.Digit:
+                    CurrentToken = ProcessConstantToken();
+                    return CurrentElement;
+
+            }
+            throw new NotImplementedException($"Unsupported character '{liter.SanitizedCharacter}' at {liter.Location}.");
         }
 
-        private static (Token, int stopPosition) ProcessConstantToken(List<Liter> liters, int currentPosition)
+        private Token ProcessConstantToken()
         {
             //(010)*110(111)*
 
@@ -112,18 +149,18 @@ namespace TranslatorLib
 
             StringBuilder contentBuilder = new();
 
-            Liter currentLiter = liters[currentPosition];
+            Liter currentLiter = Transliterator.CurrentElement;
 
             A:
             switch (currentLiter.Character)
             {
                 case '0':
                     contentBuilder.Append(currentLiter.Character);
-                    currentLiter = liters[++currentPosition];
+                    currentLiter = Transliterator.TakeElement();
                     goto B;
                 case '1':
                     contentBuilder.Append(currentLiter.Character);
-                    currentLiter = liters[++currentPosition];
+                    currentLiter = Transliterator.TakeElement();
                     goto D;
                 default:
                     throw new Exception($"Invalid liter {currentLiter}, expected '0' or '1'.");
@@ -134,7 +171,7 @@ namespace TranslatorLib
             {
 
                 contentBuilder.Append(currentLiter.Character);
-                currentLiter = liters[++currentPosition];
+                currentLiter = Transliterator.TakeElement();
                 goto C;
             }
             else
@@ -147,7 +184,7 @@ namespace TranslatorLib
             {
 
                 contentBuilder.Append(currentLiter.Character);
-                currentLiter = liters[++currentPosition];
+                currentLiter = Transliterator.TakeElement();
                 goto A;
             }
             else
@@ -160,7 +197,7 @@ namespace TranslatorLib
             {
 
                 contentBuilder.Append(currentLiter.Character);
-                currentLiter = liters[++currentPosition];
+                currentLiter = Transliterator.TakeElement();
                 goto E;
             }
             else
@@ -173,7 +210,7 @@ namespace TranslatorLib
             {
 
                 contentBuilder.Append(currentLiter.Character);
-                currentLiter = liters[++currentPosition];
+                currentLiter = Transliterator.TakeElement();
                 goto F_Fin;
             }
             else
@@ -186,7 +223,7 @@ namespace TranslatorLib
             {
 
                 contentBuilder.Append(currentLiter.Character);
-                currentLiter = liters[++currentPosition];
+                currentLiter = Transliterator.TakeElement();
                 goto G;
             }
             else if (currentLiter.Type == LiterType.Digit)
@@ -195,7 +232,7 @@ namespace TranslatorLib
             }
             else
             {
-                return (new Token(contentBuilder.ToString(), TokenType.ConstantToken), currentPosition);
+                return new Token(contentBuilder.ToString(), TokenType.ConstantToken);
             }
 
             G:
@@ -203,7 +240,7 @@ namespace TranslatorLib
             {
 
                 contentBuilder.Append(currentLiter.Character);
-                currentLiter = liters[++currentPosition];
+                currentLiter = Transliterator.TakeElement();
                 goto H;
             }
             else
@@ -216,7 +253,7 @@ namespace TranslatorLib
             {
 
                 contentBuilder.Append(currentLiter.Character);
-                currentLiter = liters[++currentPosition];
+                currentLiter = Transliterator.TakeElement();
                 goto F_Fin;
             }
             else
@@ -226,7 +263,7 @@ namespace TranslatorLib
 
         }
 
-        private static (Token, int stopPosition) ProcessIdentifierToken(List<Liter> liters, int currentPosition)
+        private Token ProcessIdentifierToken()
         {
             //(a|b|c|d)+ В порядке обратном алфавитному
 
@@ -255,26 +292,26 @@ namespace TranslatorLib
 
             StringBuilder contentBuilder = new();
 
-            Liter currentLiter = liters[currentPosition];
+            Liter currentLiter = Transliterator.CurrentElement;
 
         A:
             switch (currentLiter.Character)
             {
                 case 'a':
                     contentBuilder.Append(currentLiter.Character);
-                    currentLiter = liters[++currentPosition];
+                    currentLiter = Transliterator.TakeElement();
                     goto E_Fin;
                 case 'b':
                     contentBuilder.Append(currentLiter.Character);
-                    currentLiter = liters[++currentPosition];
+                    currentLiter = Transliterator.TakeElement();
                     goto D_Fin;
                 case 'c':
                     contentBuilder.Append(currentLiter.Character);
-                    currentLiter = liters[++currentPosition];
+                    currentLiter = Transliterator.TakeElement();
                     goto C_Fin;
                 case 'd':
                     contentBuilder.Append(currentLiter.Character);
-                    currentLiter = liters[++currentPosition];
+                    currentLiter = Transliterator.TakeElement();
                     goto B_Fin;
                 default:
                     throw new Exception($"Invalid liter {currentLiter}, expected 'a', 'b', 'c' or 'd'.");
@@ -287,19 +324,19 @@ namespace TranslatorLib
                 {
                     case 'a':
                         contentBuilder.Append(currentLiter.Character);
-                        currentLiter = liters[++currentPosition];
+                        currentLiter = Transliterator.TakeElement();
                         goto E_Fin;
                     case 'b':
                         contentBuilder.Append(currentLiter.Character);
-                        currentLiter = liters[++currentPosition];
+                        currentLiter = Transliterator.TakeElement();
                         goto D_Fin;
                     case 'c':
                         contentBuilder.Append(currentLiter.Character);
-                        currentLiter = liters[++currentPosition];
+                        currentLiter = Transliterator.TakeElement();
                         goto C_Fin;
                     case 'd':
                         contentBuilder.Append(currentLiter.Character);
-                        currentLiter = liters[++currentPosition];
+                        currentLiter = Transliterator.TakeElement();
                         goto B_Fin;
                     default:
                         throw new Exception($"Invalid liter {currentLiter}, expected 'a', 'b', 'c' or 'd'.");
@@ -307,7 +344,7 @@ namespace TranslatorLib
             }
             else
             {
-                return (new Token(contentBuilder.ToString(), TokenType.IdentifierToken), currentPosition);
+                return new Token(contentBuilder.ToString(), TokenType.IdentifierToken);
             }
 
         C_Fin:
@@ -317,15 +354,15 @@ namespace TranslatorLib
                 {
                     case 'a':
                         contentBuilder.Append(currentLiter.Character);
-                        currentLiter = liters[++currentPosition];
+                        currentLiter = Transliterator.TakeElement();
                         goto E_Fin;
                     case 'b':
                         contentBuilder.Append(currentLiter.Character);
-                        currentLiter = liters[++currentPosition];
+                        currentLiter = Transliterator.TakeElement();
                         goto D_Fin;
                     case 'c':
                         contentBuilder.Append(currentLiter.Character);
-                        currentLiter = liters[++currentPosition];
+                        currentLiter = Transliterator.TakeElement();
                         goto C_Fin;
                     default:
                         throw new Exception($"Invalid liter {currentLiter}, expected 'a', 'b', or 'c'.");
@@ -333,7 +370,7 @@ namespace TranslatorLib
             }
             else
             {
-                return (new Token(contentBuilder.ToString(), TokenType.IdentifierToken), currentPosition);
+                return new Token(contentBuilder.ToString(), TokenType.IdentifierToken);
             }
 
         D_Fin:
@@ -343,11 +380,11 @@ namespace TranslatorLib
                 {
                     case 'a':
                         contentBuilder.Append(currentLiter.Character);
-                        currentLiter = liters[++currentPosition];
+                        currentLiter = Transliterator.TakeElement();
                         goto E_Fin;
                     case 'b':
                         contentBuilder.Append(currentLiter.Character);
-                        currentLiter = liters[++currentPosition];
+                        currentLiter = Transliterator.TakeElement();
                         goto D_Fin;
                     default:
                         throw new Exception($"Invalid liter {currentLiter}, expected 'a', or 'b'.");
@@ -355,7 +392,7 @@ namespace TranslatorLib
             }
             else
             {
-                return (new Token(contentBuilder.ToString(), TokenType.IdentifierToken), currentPosition);
+                return new Token(contentBuilder.ToString(), TokenType.IdentifierToken);
             }
 
         E_Fin:
@@ -364,14 +401,14 @@ namespace TranslatorLib
                 if (currentLiter.Character == 'a')
                 {
                     contentBuilder.Append(currentLiter.Character);
-                    currentLiter = liters[++currentPosition];
+                    currentLiter = Transliterator.TakeElement();
                     if (currentLiter.Type == LiterType.Digit)
                     {
                         goto E_Fin;
                     }
                     else
                     {
-                        return (new Token(contentBuilder.ToString(), TokenType.IdentifierToken), currentPosition);
+                        return new Token(contentBuilder.ToString(), TokenType.IdentifierToken);
                     }
                 }
                 else
@@ -381,37 +418,35 @@ namespace TranslatorLib
             }
             else
             {
-                return (new Token(contentBuilder.ToString(), TokenType.IdentifierToken), currentPosition);
+                return new Token(contentBuilder.ToString(), TokenType.IdentifierToken);
             }
         }
 
-        private static int ProcessOnelineComment(List<Liter> liters, int currentPosition)
+        private void PassOnelineComment()
         {
-            Liter liter = liters[++currentPosition];
-            while (liter.Type != LiterType.Delimeter && liter.Character != 'n')
+            Liter liter = Transliterator.TakeElement();
+            while (liter.Type != LiterType.Delimeter && liter.Character != '\n')
             {
-                liter = liters[++currentPosition];
+                liter = Transliterator.TakeElement();
             }
-
-            return currentPosition;
         }
 
-        private static int ProcessMultilineComment(List<Liter> liters, int currentPosition)
+        private void PassMultilineComment()
         {
-            Liter liter = liters[++currentPosition];
+            Liter liter = Transliterator.TakeElement();
 
-            cont_comment:
-            while (liter.Type != LiterType.Special || liter.Character != '*')
+            while (true)
             {
-                liter = liters[++currentPosition];
+                while (liter.Type != LiterType.Special || liter.Character != '*')
+                {
+                    liter = Transliterator.TakeElement();
+                }
+                liter = Transliterator.TakeElement();
+                if (liter.Type == LiterType.Special && liter.Character == '/')
+                {
+                    return;
+                }
             }
-            liter = liters[++currentPosition];
-            if (liter.Type != LiterType.Special || liter.Character != '/')
-            {
-                goto cont_comment;
-            }
-
-            return currentPosition;
         }
     }
 }
