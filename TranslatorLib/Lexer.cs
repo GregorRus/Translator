@@ -402,7 +402,7 @@ namespace TranslatorLib
                 {
                     contentBuilder.Append(currentLiter.Character);
                     currentLiter = Transliterator.TakeElement();
-                    if (currentLiter.Type == LiterType.Digit)
+                    if (currentLiter.Type == LiterType.Letter)
                     {
                         goto E_Fin;
                     }
