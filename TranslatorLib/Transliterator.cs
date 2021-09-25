@@ -97,7 +97,7 @@ namespace TranslatorLib
             if (character == '\n')
             {
                 ++LineIndex;
-                ColumnIndex = 0;
+                ColumnIndex = 1;
 
                 CurrentLiter = Liter.CreateEndOfLine(location);
             }
