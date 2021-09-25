@@ -13,28 +13,44 @@ namespace TranslatorLib
         EndOfFile
     }
 
+    public struct TokenLocation
+    {
+        public LiterLocation Begin { get; init; }
+        public LiterLocation End { get; init; }
+
+        public TokenLocation(LiterLocation begin, LiterLocation end)
+        {
+            Begin = begin;
+            End = end;
+        }
+
+        public override string ToString()
+        {
+            return $"{Begin}-{End}";
+        }
+    }
+
     public class Token : IStageElement
     {
-        public Token(string content, TokenType type)
+        public Token(string content, TokenType type, TokenLocation location)
         {
             Content = content;
             Type = type;
+            Location = location;
         }
 
         public string Content { get; init; }
         public TokenType Type { get; init; }
+        public TokenLocation Location { get; init; }
 
         public bool IsLast()
         {
             return Type == TokenType.EndOfFile;
         }
 
-        //public LiterLocation Begin { get; init; }
-        //public LiterLocation End { get; init; }
-
         public override string ToString()
         {
-            return $"[\"{SanitizedContent}\", {Type}]";
+            return $"[\"{SanitizedContent}\", {Type}, {Location}]";
         }
 
         public string SanitizedContent => Type switch
@@ -76,7 +92,8 @@ namespace TranslatorLib
                     case LiterType.Delimeter:
                         if (liter.Character == '\0')
                         {
-                            return new(liter.Character.ToString(), TokenType.EndOfFile);
+                            TokenLocation location = new(liter.Location, liter.Location);
+                            return new(liter.Character.ToString(), TokenType.EndOfFile, location);
                         }
                         break;
 
@@ -150,16 +167,20 @@ namespace TranslatorLib
             StringBuilder contentBuilder = new();
 
             Liter currentLiter = Transliterator.CurrentElement;
+            LiterLocation begin = currentLiter.Location;
+            LiterLocation end;
 
             A:
             switch (currentLiter.Character)
             {
                 case '0':
                     contentBuilder.Append(currentLiter.Character);
+                    end = currentLiter.Location;
                     currentLiter = Transliterator.TakeElement();
                     goto B;
                 case '1':
                     contentBuilder.Append(currentLiter.Character);
+                    end = currentLiter.Location;
                     currentLiter = Transliterator.TakeElement();
                     goto D;
                 default:
@@ -171,6 +192,7 @@ namespace TranslatorLib
             {
 
                 contentBuilder.Append(currentLiter.Character);
+                end = currentLiter.Location;
                 currentLiter = Transliterator.TakeElement();
                 goto C;
             }
@@ -184,6 +206,7 @@ namespace TranslatorLib
             {
 
                 contentBuilder.Append(currentLiter.Character);
+                end = currentLiter.Location;
                 currentLiter = Transliterator.TakeElement();
                 goto A;
             }
@@ -197,6 +220,7 @@ namespace TranslatorLib
             {
 
                 contentBuilder.Append(currentLiter.Character);
+                end = currentLiter.Location;
                 currentLiter = Transliterator.TakeElement();
                 goto E;
             }
@@ -210,6 +234,7 @@ namespace TranslatorLib
             {
 
                 contentBuilder.Append(currentLiter.Character);
+                end = currentLiter.Location;
                 currentLiter = Transliterator.TakeElement();
                 goto F_Fin;
             }
@@ -223,6 +248,7 @@ namespace TranslatorLib
             {
 
                 contentBuilder.Append(currentLiter.Character);
+                end = currentLiter.Location;
                 currentLiter = Transliterator.TakeElement();
                 goto G;
             }
@@ -232,7 +258,8 @@ namespace TranslatorLib
             }
             else
             {
-                return new Token(contentBuilder.ToString(), TokenType.ConstantToken);
+                TokenLocation location = new(begin, end);
+                return new Token(contentBuilder.ToString(), TokenType.ConstantToken, location);
             }
 
             G:
@@ -240,6 +267,7 @@ namespace TranslatorLib
             {
 
                 contentBuilder.Append(currentLiter.Character);
+                end = currentLiter.Location;
                 currentLiter = Transliterator.TakeElement();
                 goto H;
             }
@@ -253,6 +281,7 @@ namespace TranslatorLib
             {
 
                 contentBuilder.Append(currentLiter.Character);
+                end = currentLiter.Location;
                 currentLiter = Transliterator.TakeElement();
                 goto F_Fin;
             }
@@ -293,24 +322,30 @@ namespace TranslatorLib
             StringBuilder contentBuilder = new();
 
             Liter currentLiter = Transliterator.CurrentElement;
+            LiterLocation begin = currentLiter.Location;
+            LiterLocation end;
 
         A:
             switch (currentLiter.Character)
             {
                 case 'a':
                     contentBuilder.Append(currentLiter.Character);
+                    end = currentLiter.Location;
                     currentLiter = Transliterator.TakeElement();
                     goto E_Fin;
                 case 'b':
                     contentBuilder.Append(currentLiter.Character);
+                    end = currentLiter.Location;
                     currentLiter = Transliterator.TakeElement();
                     goto D_Fin;
                 case 'c':
                     contentBuilder.Append(currentLiter.Character);
+                    end = currentLiter.Location;
                     currentLiter = Transliterator.TakeElement();
                     goto C_Fin;
                 case 'd':
                     contentBuilder.Append(currentLiter.Character);
+                    end = currentLiter.Location;
                     currentLiter = Transliterator.TakeElement();
                     goto B_Fin;
                 default:
@@ -324,18 +359,22 @@ namespace TranslatorLib
                 {
                     case 'a':
                         contentBuilder.Append(currentLiter.Character);
+                        end = currentLiter.Location;
                         currentLiter = Transliterator.TakeElement();
                         goto E_Fin;
                     case 'b':
                         contentBuilder.Append(currentLiter.Character);
+                        end = currentLiter.Location;
                         currentLiter = Transliterator.TakeElement();
                         goto D_Fin;
                     case 'c':
                         contentBuilder.Append(currentLiter.Character);
+                        end = currentLiter.Location;
                         currentLiter = Transliterator.TakeElement();
                         goto C_Fin;
                     case 'd':
                         contentBuilder.Append(currentLiter.Character);
+                        end = currentLiter.Location;
                         currentLiter = Transliterator.TakeElement();
                         goto B_Fin;
                     default:
@@ -344,7 +383,8 @@ namespace TranslatorLib
             }
             else
             {
-                return new Token(contentBuilder.ToString(), TokenType.IdentifierToken);
+                TokenLocation location = new(begin, end);
+                return new Token(contentBuilder.ToString(), TokenType.IdentifierToken, location);
             }
 
         C_Fin:
@@ -354,14 +394,17 @@ namespace TranslatorLib
                 {
                     case 'a':
                         contentBuilder.Append(currentLiter.Character);
+                        end = currentLiter.Location;
                         currentLiter = Transliterator.TakeElement();
                         goto E_Fin;
                     case 'b':
                         contentBuilder.Append(currentLiter.Character);
+                        end = currentLiter.Location;
                         currentLiter = Transliterator.TakeElement();
                         goto D_Fin;
                     case 'c':
                         contentBuilder.Append(currentLiter.Character);
+                        end = currentLiter.Location;
                         currentLiter = Transliterator.TakeElement();
                         goto C_Fin;
                     default:
@@ -370,7 +413,8 @@ namespace TranslatorLib
             }
             else
             {
-                return new Token(contentBuilder.ToString(), TokenType.IdentifierToken);
+                TokenLocation location = new(begin, end);
+                return new Token(contentBuilder.ToString(), TokenType.IdentifierToken, location);
             }
 
         D_Fin:
@@ -380,10 +424,12 @@ namespace TranslatorLib
                 {
                     case 'a':
                         contentBuilder.Append(currentLiter.Character);
+                        end = currentLiter.Location;
                         currentLiter = Transliterator.TakeElement();
                         goto E_Fin;
                     case 'b':
                         contentBuilder.Append(currentLiter.Character);
+                        end = currentLiter.Location;
                         currentLiter = Transliterator.TakeElement();
                         goto D_Fin;
                     default:
@@ -392,7 +438,8 @@ namespace TranslatorLib
             }
             else
             {
-                return new Token(contentBuilder.ToString(), TokenType.IdentifierToken);
+                TokenLocation location = new(begin, end);
+                return new Token(contentBuilder.ToString(), TokenType.IdentifierToken, location);
             }
 
         E_Fin:
@@ -401,6 +448,7 @@ namespace TranslatorLib
                 if (currentLiter.Character == 'a')
                 {
                     contentBuilder.Append(currentLiter.Character);
+                    end = currentLiter.Location;
                     currentLiter = Transliterator.TakeElement();
                     if (currentLiter.Type == LiterType.Letter)
                     {
@@ -408,7 +456,8 @@ namespace TranslatorLib
                     }
                     else
                     {
-                        return new Token(contentBuilder.ToString(), TokenType.IdentifierToken);
+                        TokenLocation location = new(begin, end);
+                        return new Token(contentBuilder.ToString(), TokenType.IdentifierToken, location);
                     }
                 }
                 else
@@ -418,7 +467,8 @@ namespace TranslatorLib
             }
             else
             {
-                return new Token(contentBuilder.ToString(), TokenType.IdentifierToken);
+                TokenLocation location = new(begin, end);
+                return new Token(contentBuilder.ToString(), TokenType.IdentifierToken, location);
             }
         }
 
