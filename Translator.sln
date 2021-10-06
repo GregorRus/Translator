@@ -3,11 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31624.102
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TranslatorExplorer", "TranslatorExplorer\TranslatorExplorer.csproj", "{30C5E4DE-BF48-4B9B-9AFF-929693E06D41}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranslatorExplorer", "TranslatorExplorer\TranslatorExplorer.csproj", "{30C5E4DE-BF48-4B9B-9AFF-929693E06D41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TranslatorLib", "TranslatorLib\TranslatorLib.csproj", "{55AC2CBF-777C-4ACB-B065-216586DA1356}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranslatorLib", "TranslatorLib\TranslatorLib.csproj", "{55AC2CBF-777C-4ACB-B065-216586DA1356}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Translator", "Translator\Translator.csproj", "{2354CD0C-C6C5-40D0-B74A-DE348B04E150}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Translator", "Translator\Translator.csproj", "{2354CD0C-C6C5-40D0-B74A-DE348B04E150}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0C9E7B32-EB5F-4592-AB5D-01BCDEC4961D}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE = LICENSE
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
