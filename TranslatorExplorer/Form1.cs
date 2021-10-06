@@ -103,7 +103,7 @@ namespace TranslatorExplorer
 
             switch (ProcessComboBox.SelectedItem)
             {
-                case "Transpiler":
+                case "Transliterator":
                     if (index < Elements.Count)
                     {
                         SourceToolTip.SetToolTip(sender as Control, Elements[index].ToString());
