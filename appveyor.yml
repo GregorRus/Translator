@@ -1,0 +1,26 @@
+version: '0.1.{build}-{branch}'
+image: Visual Studio 2019
+platform: Any CPU
+configuration:
+  - Debug
+  - Release
+before_build:
+  - cmd: dotnet --version
+  - cmd: dotnet restore
+build_script:
+  - cmd: dotnet publish -o ./publish
+artifacts:
+  - path: '\publish'
+    name: Translator
+    type: Zip
+deploy: off
+clone_depth: 1
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}'
+  package_version: '{version}'
+  assembly_version: '{version}'
+  file_version: '{version}'
+  informational_version: '{version}'
+
