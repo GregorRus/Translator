@@ -34,6 +34,7 @@ namespace TranslatorLib
     {
         ConstantToken,
         IdentifierToken,
+        SpecialToken,
         EndOfFile
     }
 
@@ -95,11 +96,12 @@ namespace TranslatorLib
         public Lexer(Transliterator transliterator)
         {
             Transliterator = transliterator;
+            transliterator.TakeElement();
         }
 
         public Token TakeElement()
         {
-            Liter liter = Transliterator.TakeElement();
+            Liter liter = Transliterator.CurrentElement;
 
             bool notPrepared = true;
             while (notPrepared)
@@ -165,6 +167,10 @@ namespace TranslatorLib
 
                 case LiterType.Digit:
                     CurrentToken = ProcessConstantToken();
+                    return CurrentElement;
+
+                case LiterType.Special:
+                    CurrentToken = ProcessSpecialToken();
                     return CurrentElement;
 
             }
@@ -496,10 +502,18 @@ namespace TranslatorLib
             }
         }
 
+        private Token ProcessSpecialToken()
+        {
+            Liter liter = Transliterator.TakeElement();
+
+            return new(liter.Character.ToString(), TokenType.SpecialToken, new(liter.Location, liter.Location));
+        }
+
         private void PassOnelineComment()
         {
             Liter liter = Transliterator.TakeElement();
-            while (liter.Type != LiterType.Delimeter && liter.Character != '\n')
+            while (liter.Type != LiterType.Delimeter
+                && (liter.Character != '\n' && liter.Character != '\0'))
             {
                 liter = Transliterator.TakeElement();
             }
@@ -519,6 +533,10 @@ namespace TranslatorLib
                 if (liter.Type == LiterType.Special && liter.Character == '/')
                 {
                     return;
+                }
+                else if (liter.Type == LiterType.Delimeter && liter.Character == '\0')
+                {
+                    throw new Exception("Unexpected EOF");
                 }
             }
         }
