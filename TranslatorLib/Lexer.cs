@@ -500,7 +500,8 @@ namespace TranslatorLib
         private void PassOnelineComment()
         {
             Liter liter = Transliterator.TakeElement();
-            while (liter.Type != LiterType.Delimeter && liter.Character != '\n')
+            while (liter.Type != LiterType.Delimeter
+                && (liter.Character != '\n' && liter.Character != '\0'))
             {
                 liter = Transliterator.TakeElement();
             }
@@ -520,6 +521,10 @@ namespace TranslatorLib
                 if (liter.Type == LiterType.Special && liter.Character == '/')
                 {
                     return;
+                }
+                else if (liter.Type == LiterType.Delimeter && liter.Character == '\0')
+                {
+                    throw new Exception("Unexpected EOF");
                 }
             }
         }
