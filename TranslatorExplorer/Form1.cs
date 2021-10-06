@@ -42,16 +42,21 @@ namespace TranslatorExplorer
         public Form1()
         {
             InitializeComponent();
+            Elements = new();
         }
+
+        private readonly List<IStageElement> Elements;
 
         private void ProcessButton_Click(object sender, EventArgs e)
         {
-            static string ProcessFullText<E>(IStage<E> stage) where E : IStageElement
+            string ProcessFullText<E>(IStage<E> stage) where E : IStageElement
             {
+                Elements.Clear();
                 StringBuilder stringBuilder = new();
                 for (E element = stage.TakeElement(); ;
                     element = stage.TakeElement())
                 {
+                    Elements.Add(element);
                     stringBuilder.AppendLine(element.ToString());
                     if (element.IsLast())
                     {
@@ -88,17 +93,36 @@ namespace TranslatorExplorer
 
         private void SourceRichTextBox_MouseHover(object sender, EventArgs e)
         {
-            //switch (ProcessComboBox.SelectedItem)
-            //{
-            //    case "Transpiler":
-            //        Point point = SourceRichTextBox.PointToClient(MousePosition);
-            //        int index = SourceRichTextBox.GetCharIndexFromPosition(point);
-            //        if (index < Liters.Count)
-            //        {
-            //            SourceToolTip.SetToolTip(sender as Control, Liters[index].ToString());
-            //        }
-            //        break;
-            //}
+            Point point = SourceRichTextBox.PointToClient(MousePosition);
+            int index = SourceRichTextBox.GetCharIndexFromPosition(point);
+
+            int line = SourceRichTextBox.GetLineFromCharIndex(index);
+            int column = index - SourceRichTextBox.GetFirstCharIndexFromLine(line);
+            // Assuming line and column counting begins with 1
+            ++line; ++column;
+
+            switch (ProcessComboBox.SelectedItem)
+            {
+                case "Transpiler":
+                    if (index < Elements.Count)
+                    {
+                        SourceToolTip.SetToolTip(sender as Control, Elements[index].ToString());
+                    }
+                    return;
+                case "Lexer":
+                    foreach (Token el in Elements)
+                    {
+                        if (el.Location.Begin.Line <= line
+                            && el.Location.End.Line >= line
+                            && el.Location.Begin.Column <= column
+                            && el.Location.End.Column >= column)
+                        {
+                            SourceToolTip.SetToolTip(sender as Control, el.ToString());
+                            return;
+                        }
+                    }
+                    return;
+            }
         }
     }
 }
