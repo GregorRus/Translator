@@ -34,6 +34,7 @@ namespace TranslatorLib
     {
         ConstantToken,
         IdentifierToken,
+        SpecialToken,
         EndOfFile
     }
 
@@ -166,6 +167,10 @@ namespace TranslatorLib
 
                 case LiterType.Digit:
                     CurrentToken = ProcessConstantToken();
+                    return CurrentElement;
+
+                case LiterType.Special:
+                    CurrentToken = ProcessSpecialToken();
                     return CurrentElement;
 
             }
@@ -495,6 +500,13 @@ namespace TranslatorLib
                 TokenLocation location = new(begin, end);
                 return new Token(contentBuilder.ToString(), TokenType.IdentifierToken, location);
             }
+        }
+
+        private Token ProcessSpecialToken()
+        {
+            Liter liter = Transliterator.TakeElement();
+
+            return new(liter.Character.ToString(), TokenType.SpecialToken, new(liter.Location, liter.Location));
         }
 
         private void PassOnelineComment()
