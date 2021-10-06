@@ -95,11 +95,12 @@ namespace TranslatorLib
         public Lexer(Transliterator transliterator)
         {
             Transliterator = transliterator;
+            transliterator.TakeElement();
         }
 
         public Token TakeElement()
         {
-            Liter liter = Transliterator.TakeElement();
+            Liter liter = Transliterator.CurrentElement;
 
             bool notPrepared = true;
             while (notPrepared)
