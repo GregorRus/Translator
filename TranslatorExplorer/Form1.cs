@@ -77,6 +77,7 @@ namespace TranslatorExplorer
                 {
                     "Transliterator" => ProcessFullText(transliterator),
                     "Lexer" => ProcessFullText(lexer),
+                    "Syntax Analyzer" => throw new NotImplementedException(),
                     _ => throw new NotImplementedException()
                 };
 
@@ -121,6 +122,8 @@ namespace TranslatorExplorer
                             return;
                         }
                     }
+                    return;
+                case "Syntax Analyzer":
                     return;
             }
         }
