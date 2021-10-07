@@ -41,4 +41,16 @@ namespace TranslatorLib
     {
         bool IsLast();
     }
+
+    public interface ITreeStage<out E> where E : ITreeElement<E>
+    {
+        E TakeTreeRootElement();
+
+        E RootElement { get; }
+    }
+
+    public interface ITreeElement<out E>
+    {
+        E[] Childs { get; }
+    }
 }
