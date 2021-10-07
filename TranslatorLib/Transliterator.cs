@@ -144,7 +144,7 @@ namespace TranslatorLib
                 char c when char.IsLetter(c) => LiterType.Letter,
                 char c when char.IsDigit(c) => LiterType.Digit,
                 char c when char.IsWhiteSpace(c) => LiterType.Whitespace,
-                char c when "*!?&|^$;:.,()[]{}-+/=".Contains(c) => LiterType.Special,
+                char c when "*!?&|^$;:.,()[]{}-+/=∧∨¬".Contains(c) => LiterType.Special,
                 char c when "\n\0".Contains(c) => LiterType.Delimeter,
 
                 _ => LiterType.Other,
