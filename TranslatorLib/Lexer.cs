@@ -141,7 +141,7 @@ namespace TranslatorLib
                         }
                         else
                         {
-                            throw new NotImplementedException($"Unsupported character '{liter.SanitizedCharacter}' at {liter.Location}.");
+                            notPrepared = false;
                         }
                         break;
 
@@ -577,7 +577,8 @@ namespace TranslatorLib
 
         private Token ProcessSpecialToken()
         {
-            Liter liter = Transliterator.TakeElement();
+            Liter liter = Transliterator.CurrentElement;
+            _ = Transliterator.TakeElement();
 
             return new(liter.Character.ToString(), TokenType.SpecialToken, new(liter.Location, liter.Location));
         }
