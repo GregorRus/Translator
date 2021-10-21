@@ -66,6 +66,27 @@ namespace TranslatorExplorer
                 return stringBuilder.ToString();
             }
 
+            string ProcessFullTree<E>(ITreeStage<E> stage) where E : ITreeElement<E>
+            {
+                void ProcessNode(StringBuilder stringBuilder, E node, int level = 0)
+                {
+                    for (int i = 0; i < level; ++i)
+                    {
+                        stringBuilder.Append("    ");
+                    }
+                    stringBuilder.AppendLine(node.ToString());
+                    foreach (E child in node.Childs)
+                    {
+                        ProcessNode(stringBuilder, child, level + 1);
+                    }
+                }
+
+                StringBuilder stringBuilder = new();
+                E rootNode = stage.TakeTreeRootElement();
+                ProcessNode(stringBuilder, rootNode);
+                return stringBuilder.ToString();
+            }
+
             try
             {
                 using StringReader reader = new(SourceRichTextBox.Text);
