@@ -152,9 +152,13 @@ namespace TranslatorLib
             if (token.Type == TokenType.ConstantToken || token.Type == TokenType.IdentifierToken)
             {
                 token = Lexer.TakeElement();
-                if (token.Type == TokenType.ConstantToken || token.Type == TokenType.IdentifierToken)
+                if (token.Type == TokenType.SpecialToken && token.Content == "=")
                 {
-                    return new("O");
+                    token = Lexer.TakeElement();
+                    if (token.Type == TokenType.ConstantToken || token.Type == TokenType.IdentifierToken)
+                    {
+                        return new("O");
+                    }
                 }
             }
             throw new Exception("Invalid syntax for O");
