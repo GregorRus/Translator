@@ -54,11 +54,11 @@ namespace TranslatorLib
         public SyntaxAnalyzer(Lexer lexer)
         {
             Lexer = lexer;
-            lexer.TakeElement();
         }
 
         public SyntaxTreeNode TakeTreeRootElement()
         {
+            Lexer.TakeElement();
             return TreeRootNode = Gram_D();
         }
 

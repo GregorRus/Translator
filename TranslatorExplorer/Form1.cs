@@ -91,15 +91,11 @@ namespace TranslatorExplorer
             {
                 using StringReader reader = new(SourceRichTextBox.Text);
 
-                Transliterator transliterator = new(reader);
-                Lexer lexer = new(transliterator);
-                SyntaxAnalyzer syntaxAnalyzer = new(lexer);
-
                 ResultRichTextBox.Text = ProcessComboBox.SelectedItem switch
                 {
-                    "Transliterator" => ProcessFullText(transliterator),
-                    "Lexer" => ProcessFullText(lexer),
-                    "Syntax Analyzer" => ProcessFullTree(syntaxAnalyzer),
+                    "Transliterator" => ProcessFullText(new Transliterator(reader)),
+                    "Lexer" => ProcessFullText(new Lexer(new(reader))),
+                    "Syntax Analyzer" => ProcessFullTree(new SyntaxAnalyzer(new(new(reader)))),
                     _ => throw new NotImplementedException()
                 };
 
