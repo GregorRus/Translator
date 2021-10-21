@@ -64,12 +64,10 @@ namespace TranslatorLib
 
         private SyntaxTreeNode Gram_D()
         {
-            Token token = Lexer.CurrentElement;
-
             SyntaxTreeNode gram_k = Gram_K();
-            if (token.Type == TokenType.EndOfFile)
+            if (Lexer.TakeElement().Type == TokenType.EndOfFile)
             {
-                return new("B", gram_k);
+                return new("D", gram_k);
             }
             SyntaxTreeNode gram_b = Gram_B();
             return new("D", gram_k, gram_b);
@@ -77,15 +75,13 @@ namespace TranslatorLib
 
         private SyntaxTreeNode Gram_K()
         {
-            Token token = Lexer.CurrentElement;
-
             SyntaxTreeNode gram_a = Gram_A();
-            if (token.Type == TokenType.EndOfFile)
+            if (Lexer.TakeElement().Type == TokenType.EndOfFile)
             {
-                return new("B", gram_a);
+                return new("K", gram_a);
             }
             SyntaxTreeNode gram_c = Gram_C();
-            return new("D", gram_a, gram_c);
+            return new("K", gram_a, gram_c);
         }
 
         private SyntaxTreeNode Gram_B()
