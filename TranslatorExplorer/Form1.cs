@@ -93,12 +93,13 @@ namespace TranslatorExplorer
 
                 Transliterator transliterator = new(reader);
                 Lexer lexer = new(transliterator);
+                SyntaxAnalyzer syntaxAnalyzer = new(lexer);
 
                 ResultRichTextBox.Text = ProcessComboBox.SelectedItem switch
                 {
                     "Transliterator" => ProcessFullText(transliterator),
                     "Lexer" => ProcessFullText(lexer),
-                    "Syntax Analyzer" => throw new NotImplementedException(),
+                    "Syntax Analyzer" => ProcessFullTree(syntaxAnalyzer),
                     _ => throw new NotImplementedException()
                 };
 
