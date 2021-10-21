@@ -598,7 +598,8 @@ namespace TranslatorLib
 
             while (true)
             {
-                while (liter.Type != LiterType.Special || liter.Character != '*')
+                while ((liter.Type != LiterType.Special || liter.Character != '*')
+                     && (liter.Type != LiterType.Delimeter || liter.Character != '\0'))
                 {
                     liter = Transliterator.TakeElement();
                 }
