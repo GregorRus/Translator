@@ -41,6 +41,11 @@ namespace TranslatorLib
         public string Name { get; init; }
 
         public SyntaxTreeNode[] Childs { get; init; }
+
+        public override string ToString()
+        {
+            return $"{Name}: ({Childs.Length})";
+        }
     }
 
     public class SyntaxAnalyzer : ITreeStage<SyntaxTreeNode>
