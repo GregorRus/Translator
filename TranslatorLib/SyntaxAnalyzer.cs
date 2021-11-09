@@ -23,10 +23,6 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TranslatorLib
 {
@@ -36,11 +32,22 @@ namespace TranslatorLib
         {
             Name = name;
             Childs = childs;
+
+            foreach (var child in Childs)
+            {
+                if (child.Parent != null)
+                {
+                    throw new ArgumentException("Node already has parent");
+                }
+                child.Parent = this;
+            }
         }
 
         public string Name { get; init; }
 
         public SyntaxTreeNode[] Childs { get; init; }
+
+        public SyntaxTreeNode? Parent { get; private set; }
 
         public override string ToString()
         {
@@ -54,7 +61,7 @@ namespace TranslatorLib
 
         private SyntaxTreeNode? TreeRootNode;
 
-        public SyntaxTreeNode RootElement => TreeRootNode ??  throw new InvalidOperationException("Invalid operation performed: no available current element before TakeElement call.");
+        public SyntaxTreeNode RootElement => TreeRootNode ?? throw new InvalidOperationException("Invalid operation performed: no available current element before TakeElement call.");
 
         public SyntaxAnalyzer(Lexer lexer)
         {

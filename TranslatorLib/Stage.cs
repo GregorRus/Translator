@@ -22,14 +22,13 @@
  *  SOFTWARE.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace TranslatorLib
 {
+    public interface IBaseElement
+    {
+
+    }
+
     public interface IStage<out E> where E : IStageElement
     {
         E TakeElement();
@@ -37,7 +36,7 @@ namespace TranslatorLib
         E CurrentElement { get; }
     }
 
-    public interface IStageElement
+    public interface IStageElement : IBaseElement
     {
         bool IsLast();
     }
@@ -49,7 +48,12 @@ namespace TranslatorLib
         E RootElement { get; }
     }
 
-    public interface ITreeElement<out E>
+    public interface ITreeElement : IBaseElement
+    {
+
+    }
+
+    public interface ITreeElement<out E> : ITreeElement
     {
         E[] Childs { get; }
     }
