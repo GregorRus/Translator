@@ -162,17 +162,17 @@ namespace TranslatorLib
             {
                 case LiterType.Letter:
                     CurrentToken = ProcessIdentifierToken();
-                    HashTableList.PrimaryHashTable.AddItem(CurrentToken.Content, CurrentToken.Content);
+                    HashTableList.PrimaryHashTable.TryAddItem(CurrentToken.Content, CurrentToken.Content);
                     return CurrentElement;
 
                 case LiterType.Digit:
                     CurrentToken = ProcessConstantToken();
-                    HashTableList.SecondaryHashTable.AddItem(CurrentToken.Content, CurrentToken.Content);
+                    HashTableList.SecondaryHashTable.TryAddItem(CurrentToken.Content, CurrentToken.Content);
                     return CurrentElement;
 
                 case LiterType.Special:
                     CurrentToken = ProcessSpecialToken();
-                    HashTableList.SignHashTable.AddItem(CurrentToken.Content, CurrentToken.Content);
+                    HashTableList.SignHashTable.TryAddItem(CurrentToken.Content, CurrentToken.Content);
                     return CurrentElement;
 
             }
