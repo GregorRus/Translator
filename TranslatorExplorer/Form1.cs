@@ -84,6 +84,16 @@ namespace TranslatorExplorer
                 return stringBuilder.ToString();
             }
 
+            string ProcessHashTable(HashTable hashTable)
+            {
+                StringBuilder stringBuilder = new();
+                foreach (var item in hashTable)
+                {
+                    stringBuilder.AppendLine(item.Key);
+                }
+                return stringBuilder.ToString();
+            }
+
             try
             {
                 using StringReader reader = new(SourceRichTextBox.Text);
@@ -97,6 +107,10 @@ namespace TranslatorExplorer
                     "Syntax Analyzer" => ProcessFullTree(new SyntaxAnalyzer(new(new(reader), hashTables))),
                     _ => throw new NotImplementedException()
                 };
+
+                Hash1RichTextBox.Text = ProcessHashTable(hashTables.PrimaryHashTable);
+                Hash2RichTextBox.Text = ProcessHashTable(hashTables.SecondaryHashTable);
+                Hash3RichTextBox.Text = ProcessHashTable(hashTables.SignHashTable);
 
                 StageToolStripStatusLabel.Text = "Работа выполнена без ошибок";
                 StageStatusStrip.BackColor = Color.FromArgb(0xFF, 0xB1, 0xFF, 0x54);

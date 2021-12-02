@@ -29,15 +29,17 @@ using TranslatorLib;
 
 namespace Translator
 {
-    class Program
+    static class Program
     {
         static void Main(string[] args)
         {
             string filename = args[1];
             using StreamReader streamReader = new(filename);
 
+            HashTableList hashTables = new();
+
             Transliterator transliterator = new(streamReader);
-            Lexer lexer = new(transliterator);
+            Lexer lexer = new(transliterator, hashTables);
 
             for (var liter = lexer.TakeElement();
                 liter.Type != TokenType.EndOfFile;

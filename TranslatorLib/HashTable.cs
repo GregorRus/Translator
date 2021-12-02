@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -36,7 +37,7 @@ namespace TranslatorLib
 
     }
 
-    public class HashTableSubList
+    public class HashTableSubList : IEnumerable<HashTableItem>
     {
         public readonly int KeyHash;
         public readonly List<HashTableItem> Items;
@@ -92,9 +93,19 @@ namespace TranslatorLib
                 Items.Remove(item);
             }
         }
+
+        public IEnumerator<HashTableItem> GetEnumerator()
+        {
+            return ((IEnumerable<HashTableItem>)Items).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable)Items).GetEnumerator();
+        }
     }
 
-    public class HashTable
+    public class HashTable : IEnumerable<HashTableItem>
     {
         private SortedList<int, HashTableSubList> Sublists;
 
@@ -139,6 +150,28 @@ namespace TranslatorLib
             int keyHash = CalculateHash(Key);
             HashTableSubList? subList = Sublists[keyHash];
             subList?.RemoveItem(Key, keyHash);
+        }
+
+        IEnumerator<HashTableItem> IEnumerable<HashTableItem>.GetEnumerator()
+        {
+            foreach (var sublist in Sublists)
+            {
+                foreach (var item in sublist.Value)
+                {
+                    yield return item;
+                }
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            foreach (var sublist in Sublists)
+            {
+                foreach (var item in sublist.Value)
+                {
+                    yield return item;
+                }
+            }
         }
     }
 
