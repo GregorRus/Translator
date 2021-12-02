@@ -48,7 +48,7 @@ namespace TranslatorLib
             Items = new();
         }
 
-        public void AddItem(string Key, int khash, object Object)
+        public bool TryAddItem(string Key, int khash, object Object)
         {
             if (khash != KeyHash)
             {
@@ -58,11 +58,21 @@ namespace TranslatorLib
             HashTableItem? existing = GetItemUnchecked(Key, khash);
             if (existing != null)
             {
-                throw new InvalidOperationException("Key already exists");
+                return false;
             }
 
             HashTableItem newItem = new(Key, KeyHash, Object);
             Items.Add(newItem);
+            return true;
+        }
+
+        public void AddItem(string Key, int khash, object Object)
+        {
+            bool added = TryAddItem(Key, khash, Object);
+            if (!added)
+            {
+                throw new InvalidOperationException("Key already exists");
+            }
         }
 
         private HashTableItem? GetItemUnchecked(string Key, int khash)
@@ -119,24 +129,33 @@ namespace TranslatorLib
             return Hashing.Hash(key);
         }
 
-        public void AddItem(string Key, object obj)
+        public bool TryAddItem(string Key, object obj)
         {
             int keyHash = CalculateHash(Key);
-            HashTableSubList? subList = Sublists[keyHash];
-            if (subList is null)
+            bool sublistExists = Sublists.TryGetValue(keyHash, out HashTableSubList? sublist);
+            if (!sublistExists || sublist is null)
             {
-                subList = new(keyHash);
-                Sublists.Add(keyHash, subList);
+                sublist = new(keyHash);
+                Sublists.Add(keyHash, sublist);
             }
 
-            subList.AddItem(Key, keyHash, obj);
+            return sublist.TryAddItem(Key, keyHash, obj);
+        }
+
+        public void AddItem(string Key, object obj)
+        {
+            bool added = TryAddItem(Key, obj);
+            if (!added)
+            {
+                throw new InvalidOperationException("Key already exists");
+            }
         }
 
         public object GetItem(string Key)
         {
             int keyHash = CalculateHash(Key);
-            HashTableSubList? subList = Sublists[keyHash];
-            return subList?.GetItem(Key, keyHash) ?? throw new KeyNotFoundException();
+            _ = Sublists.TryGetValue(keyHash, out HashTableSubList? sublist);
+            return sublist?.GetItem(Key, keyHash) ?? throw new KeyNotFoundException();
         }
 
         public object this[string key]
@@ -148,8 +167,8 @@ namespace TranslatorLib
         public void RemoveItem(string Key)
         {
             int keyHash = CalculateHash(Key);
-            HashTableSubList? subList = Sublists[keyHash];
-            subList?.RemoveItem(Key, keyHash);
+            _ = Sublists.TryGetValue(keyHash, out HashTableSubList? sublist);
+            sublist?.RemoveItem(Key, keyHash);
         }
 
         IEnumerator<HashTableItem> IEnumerable<HashTableItem>.GetEnumerator()
