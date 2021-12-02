@@ -144,6 +144,16 @@ namespace TranslatorLib
 
     public class HashTableList
     {
+        public HashTable PrimaryHashTable { get; }
+        public HashTable SecondaryHashTable { get; }
+        public HashTable SignHashTable { get; }
+
+        public HashTableList()
+        {
+            PrimaryHashTable = new();
+            SecondaryHashTable = new();
+            SignHashTable = new();
+        }
 
     }
 }
