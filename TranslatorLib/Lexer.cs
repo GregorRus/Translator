@@ -23,10 +23,7 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace TranslatorLib
 {
@@ -88,15 +85,17 @@ namespace TranslatorLib
     public class Lexer : IStage<Token>
     {
         private readonly Transliterator Transliterator;
+        private readonly HashTableList HashTableList;
 
         private Token? CurrentToken;
 
         public Token CurrentElement => CurrentToken ?? throw new InvalidOperationException("Invalid operation performed: no available current element before TakeElement call.");
 
-        public Lexer(Transliterator transliterator)
+        public Lexer(Transliterator transliterator, HashTableList hashTableList)
         {
             Transliterator = transliterator;
             transliterator.TakeElement();
+            HashTableList = hashTableList;
         }
 
         public Token TakeElement()
@@ -163,14 +162,17 @@ namespace TranslatorLib
             {
                 case LiterType.Letter:
                     CurrentToken = ProcessIdentifierToken();
+                    HashTableList.PrimaryHashTable.AddItem(CurrentToken.Content, CurrentToken.Content);
                     return CurrentElement;
 
                 case LiterType.Digit:
                     CurrentToken = ProcessConstantToken();
+                    HashTableList.SecondaryHashTable.AddItem(CurrentToken.Content, CurrentToken.Content);
                     return CurrentElement;
 
                 case LiterType.Special:
                     CurrentToken = ProcessSpecialToken();
+                    HashTableList.SignHashTable.AddItem(CurrentToken.Content, CurrentToken.Content);
                     return CurrentElement;
 
             }
@@ -243,7 +245,7 @@ namespace TranslatorLib
             LiterLocation begin = currentLiter.Location;
             LiterLocation end;
 
-            A:
+        A:
             switch (currentLiter.Character)
             {
                 case '0':
@@ -260,7 +262,7 @@ namespace TranslatorLib
                     throw new Exception($"Invalid liter {currentLiter}, expected '0' or '1'.");
             }
 
-            B:
+        B:
             if (currentLiter.Character == '1')
             {
 
@@ -274,7 +276,7 @@ namespace TranslatorLib
                 throw new Exception($"Invalid liter {currentLiter}, expected '1'.");
             }
 
-            C:
+        C:
             if (currentLiter.Character == '0')
             {
 
@@ -288,7 +290,7 @@ namespace TranslatorLib
                 throw new Exception($"Invalid liter {currentLiter}, expected '0'.");
             }
 
-            D:
+        D:
             if (currentLiter.Character == '1')
             {
 
@@ -302,7 +304,7 @@ namespace TranslatorLib
                 throw new Exception($"Invalid liter {currentLiter}, expected '1'.");
             }
 
-            E:
+        E:
             if (currentLiter.Character == '0')
             {
 
@@ -316,7 +318,7 @@ namespace TranslatorLib
                 throw new Exception($"Invalid liter {currentLiter}, expected '0'.");
             }
 
-            F_Fin:
+        F_Fin:
             if (currentLiter.Character == '1')
             {
 
@@ -335,7 +337,7 @@ namespace TranslatorLib
                 return new Token(contentBuilder.ToString(), TokenType.ConstantToken, location);
             }
 
-            G:
+        G:
             if (currentLiter.Character == '1')
             {
 
@@ -349,7 +351,7 @@ namespace TranslatorLib
                 throw new Exception($"Invalid liter {currentLiter}, expected '1'.");
             }
 
-            H:
+        H:
             if (currentLiter.Character == '1')
             {
 

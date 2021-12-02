@@ -88,11 +88,13 @@ namespace TranslatorExplorer
             {
                 using StringReader reader = new(SourceRichTextBox.Text);
 
+                HashTableList hashTables = new();
+
                 ResultRichTextBox.Text = ProcessComboBox.SelectedItem switch
                 {
                     "Transliterator" => ProcessFullText(new Transliterator(reader)),
-                    "Lexer" => ProcessFullText(new Lexer(new(reader))),
-                    "Syntax Analyzer" => ProcessFullTree(new SyntaxAnalyzer(new(new(reader)))),
+                    "Lexer" => ProcessFullText(new Lexer(new(reader), hashTables)),
+                    "Syntax Analyzer" => ProcessFullTree(new SyntaxAnalyzer(new(new(reader), hashTables))),
                     _ => throw new NotImplementedException()
                 };
 
