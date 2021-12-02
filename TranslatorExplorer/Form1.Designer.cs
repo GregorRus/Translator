@@ -269,6 +269,7 @@ namespace TranslatorExplorer
             this.Hash1RichTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Hash1RichTextBox.Location = new System.Drawing.Point(3, 39);
             this.Hash1RichTextBox.Name = "Hash1RichTextBox";
+            this.Hash1RichTextBox.ReadOnly = true;
             this.Hash1RichTextBox.Size = new System.Drawing.Size(258, 79);
             this.Hash1RichTextBox.TabIndex = 3;
             this.Hash1RichTextBox.Text = "";
@@ -278,6 +279,7 @@ namespace TranslatorExplorer
             this.Hash2RichTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Hash2RichTextBox.Location = new System.Drawing.Point(267, 39);
             this.Hash2RichTextBox.Name = "Hash2RichTextBox";
+            this.Hash2RichTextBox.ReadOnly = true;
             this.Hash2RichTextBox.Size = new System.Drawing.Size(258, 79);
             this.Hash2RichTextBox.TabIndex = 4;
             this.Hash2RichTextBox.Text = "";
@@ -287,6 +289,7 @@ namespace TranslatorExplorer
             this.Hash3RichTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Hash3RichTextBox.Location = new System.Drawing.Point(531, 39);
             this.Hash3RichTextBox.Name = "Hash3RichTextBox";
+            this.Hash3RichTextBox.ReadOnly = true;
             this.Hash3RichTextBox.Size = new System.Drawing.Size(260, 79);
             this.Hash3RichTextBox.TabIndex = 5;
             this.Hash3RichTextBox.Text = "";
