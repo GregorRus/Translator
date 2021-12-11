@@ -104,6 +104,7 @@ namespace TranslatorLib
             {
                 token = Lexer.TakeElement();
                 SyntaxTreeNode gram_k = Gram_K();
+                token = Lexer.TakeElement();
                 if (token.Type == TokenType.EndOfFile)
                 {
                     return new("B", gram_k);
@@ -122,6 +123,7 @@ namespace TranslatorLib
             {
                 token = Lexer.TakeElement();
                 SyntaxTreeNode gram_a = Gram_A();
+                token = Lexer.TakeElement();
                 if (token.Type == TokenType.EndOfFile)
                 {
                     return new("C", gram_a);
