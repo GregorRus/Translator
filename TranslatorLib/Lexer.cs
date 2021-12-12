@@ -431,7 +431,9 @@ namespace TranslatorLib
             LiterLocation begin = currentLiter.Location;
             LiterLocation end;
 
+#pragma warning disable CS0164 // Отсутствует ссылка на эту метку.
         A:
+#pragma warning restore CS0164 // Отсутствует ссылка на эту метку.
             switch (currentLiter.Character)
             {
                 case 'a':
