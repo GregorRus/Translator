@@ -118,7 +118,8 @@ namespace TranslatorLib
                         if (liter.Character == '\0')
                         {
                             TokenLocation location = new(liter.Location, liter.Location);
-                            return new(liter.Character.ToString(), TokenType.EndOfFile, location);
+                            CurrentToken = new(liter.Character.ToString(), TokenType.EndOfFile, location);
+                            return CurrentElement;
                         }
                         break;
 
