@@ -28,10 +28,11 @@ namespace TranslatorLib
 {
     public class SyntaxTreeNode : ITreeElement<SyntaxTreeNode>
     {
-        public SyntaxTreeNode(string name, params SyntaxTreeNode[] childs)
+        public SyntaxTreeNode(string name, Token? token = null, params SyntaxTreeNode[] childs)
         {
             Name = name;
             Childs = childs;
+            UnderlyingToken = token;
 
             foreach (var child in Childs)
             {
@@ -49,9 +50,11 @@ namespace TranslatorLib
 
         public SyntaxTreeNode? Parent { get; private set; }
 
+        public Token? UnderlyingToken { get; init; }
+
         public override string ToString()
         {
-            return $"{Name}: ({Childs.Length})";
+            return $"{Name}: {UnderlyingToken?.ToString()} ({Childs.Length})";
         }
     }
 
@@ -77,61 +80,59 @@ namespace TranslatorLib
         private SyntaxTreeNode Gram_D()
         {
             SyntaxTreeNode gram_k = Gram_K();
-            if (Lexer.TakeElement().Type == TokenType.EndOfFile)
+            if (Lexer.CurrentElement.Type == TokenType.SpecialToken && Lexer.CurrentElement.Content == "∨")
             {
-                return new("D", gram_k);
+                SyntaxTreeNode gram_b = Gram_B();
+                return new("D", null, gram_k, gram_b);
             }
-            SyntaxTreeNode gram_b = Gram_B();
-            return new("D", gram_k, gram_b);
+            return new("D", null, gram_k);
         }
 
         private SyntaxTreeNode Gram_K()
         {
             SyntaxTreeNode gram_a = Gram_A();
-            if (Lexer.TakeElement().Type == TokenType.EndOfFile)
+            if (Lexer.CurrentElement.Type == TokenType.SpecialToken && Lexer.CurrentElement.Content == "∧")
             {
-                return new("K", gram_a);
+                SyntaxTreeNode gram_c = Gram_C();
+                return new("K", null, gram_a, gram_c);
             }
-            SyntaxTreeNode gram_c = Gram_C();
-            return new("K", gram_a, gram_c);
+            return new("K", null, gram_a);
         }
 
         private SyntaxTreeNode Gram_B()
         {
-            Token token = Lexer.CurrentElement;
-
-            if (token.Type == TokenType.SpecialToken && token.Content == "∨")
+            if (Lexer.CurrentElement.Type == TokenType.SpecialToken && Lexer.CurrentElement.Content == "∨")
             {
-                token = Lexer.TakeElement();
+                Token token = Lexer.CurrentElement;
+                SyntaxTreeNode disjunction = new("Disjunction", token);
+                Lexer.TakeElement();
                 SyntaxTreeNode gram_k = Gram_K();
-                token = Lexer.TakeElement();
-                if (token.Type == TokenType.EndOfFile)
+                if (Lexer.CurrentElement.Type == TokenType.SpecialToken && Lexer.CurrentElement.Content == "∨")
                 {
-                    return new("B", gram_k);
+                    SyntaxTreeNode gram_b = Gram_B();
+                    return new("B", null, disjunction, gram_k, gram_b);
                 }
-                SyntaxTreeNode gram_b = Gram_B();
-                return new("B", gram_k, gram_b);
+                return new("B", null, disjunction, gram_k);
             }
-            throw new Exception("Invalid syntax for B");
+            throw new Exception($"Invalid syntax for B, expected ∨, actually {Lexer.CurrentElement}");
         }
 
         private SyntaxTreeNode Gram_C()
         {
-            Token token = Lexer.CurrentElement;
-
-            if (token.Type == TokenType.SpecialToken && token.Content == "∧")
+            if (Lexer.CurrentElement.Type == TokenType.SpecialToken && Lexer.CurrentElement.Content == "∧")
             {
-                token = Lexer.TakeElement();
+                Token token = Lexer.CurrentElement;
+                SyntaxTreeNode conjunction = new("Conjunction", token);
+                Lexer.TakeElement();
                 SyntaxTreeNode gram_a = Gram_A();
-                token = Lexer.TakeElement();
-                if (token.Type == TokenType.EndOfFile)
+                if (Lexer.CurrentElement.Type == TokenType.SpecialToken && Lexer.CurrentElement.Content == "∧")
                 {
-                    return new("C", gram_a);
+                    SyntaxTreeNode gram_c = Gram_C();
+                    return new("C", null, conjunction, gram_a, gram_c);
                 }
-                SyntaxTreeNode gram_c = Gram_C();
-                return new("C", gram_a, gram_c);
+                return new("C", null, conjunction, gram_a);
             }
-            throw new Exception("Invalid syntax for C");
+            throw new Exception($"Invalid syntax for C, expected ∧, actually {Lexer.CurrentElement}");
         }
 
         private SyntaxTreeNode Gram_A()
@@ -140,18 +141,22 @@ namespace TranslatorLib
 
             if (token.Type == TokenType.SpecialToken && token.Content == "¬")
             {
+                SyntaxTreeNode negation = new("Negation", token);
                 Lexer.TakeElement();
                 SyntaxTreeNode gram_a = Gram_A();
-                return new("A", gram_a);
+                return new("A", null, negation, gram_a);
             }
             else if (token.Type == TokenType.SpecialToken && token.Content == "(")
             {
+                SyntaxTreeNode opening_bracket = new("OpeningBracket", token);
                 Lexer.TakeElement();
                 SyntaxTreeNode gram_d = Gram_D();
-                return new("A", gram_d);
+                SyntaxTreeNode closing_bracket = new("ClosingBracket", token);
+                Lexer.TakeElement();
+                return new("A", null, opening_bracket, gram_d, closing_bracket);
             }
             SyntaxTreeNode gram_o = Gram_O();
-            return new("A", gram_o);
+            return new("A", null, gram_o);
         }
 
         private SyntaxTreeNode Gram_O()
@@ -160,13 +165,17 @@ namespace TranslatorLib
 
             if (token.Type == TokenType.ConstantToken || token.Type == TokenType.IdentifierToken)
             {
+                SyntaxTreeNode operand_1 = new("Operand1", token);
                 token = Lexer.TakeElement();
                 if (token.Type == TokenType.SpecialToken && token.Content == "=")
                 {
+                    SyntaxTreeNode assignment = new("Assignment", token);
                     token = Lexer.TakeElement();
                     if (token.Type == TokenType.ConstantToken || token.Type == TokenType.IdentifierToken)
                     {
-                        return new("O");
+                        SyntaxTreeNode operand_2 = new("Operand2", token);
+                        Lexer.TakeElement();
+                        return new("O", null, operand_1, assignment, operand_2);
                     }
                 }
             }
