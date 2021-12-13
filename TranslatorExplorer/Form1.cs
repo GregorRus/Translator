@@ -38,10 +38,15 @@ namespace TranslatorExplorer
         {
             InitializeComponent();
             Elements = new();
+            SourceFormattingTemplate = new(SourceRichTextBox, @"\ulwave", @"\ulnone");
+            SourceClearTemplate = new(SourceRichTextBox);
         }
 
         private readonly List<IStageElement> Elements;
         private ITreeElement RootTreeElement;
+
+        private RichTextTemplate SourceFormattingTemplate;
+        private RichTextTemplate SourceClearTemplate;
 
         private void ProcessButton_Click(object sender, EventArgs e)
         {
@@ -98,6 +103,7 @@ namespace TranslatorExplorer
             {
                 using StringReader reader = new(SourceRichTextBox.Text);
 
+                //SourceRichTextBox.Rtf = SourceClearTemplate.Render(SourceRichTextBox.Text);
                 SourceRichTextBox.SelectionColor = Color.Black;
 
                 HashTableList hashTables = new();
