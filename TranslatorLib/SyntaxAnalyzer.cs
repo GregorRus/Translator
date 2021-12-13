@@ -101,13 +101,14 @@ namespace TranslatorLib
 
         private SyntaxTreeNode Gram_B()
         {
-            if (Lexer.CurrentElement.Type == TokenType.SpecialToken && Lexer.CurrentElement.Content == "∨")
+            Token token = Lexer.CurrentElement;
+            if (token.Type == TokenType.SpecialToken && token.Content == "∨")
             {
-                Token token = Lexer.CurrentElement;
                 SyntaxTreeNode disjunction = new("Disjunction", token);
-                Lexer.TakeElement();
+                token = Lexer.TakeElement();
                 SyntaxTreeNode gram_k = Gram_K();
-                if (Lexer.CurrentElement.Type == TokenType.SpecialToken && Lexer.CurrentElement.Content == "∨")
+                token = Lexer.CurrentElement;
+                if (token.Type == TokenType.SpecialToken && token.Content == "∨")
                 {
                     SyntaxTreeNode gram_b = Gram_B();
                     return new("B", null, disjunction, gram_k, gram_b);
@@ -119,13 +120,14 @@ namespace TranslatorLib
 
         private SyntaxTreeNode Gram_C()
         {
-            if (Lexer.CurrentElement.Type == TokenType.SpecialToken && Lexer.CurrentElement.Content == "∧")
+            Token token = Lexer.CurrentElement;
+            if (token.Type == TokenType.SpecialToken && token.Content == "∧")
             {
-                Token token = Lexer.CurrentElement;
                 SyntaxTreeNode conjunction = new("Conjunction", token);
-                Lexer.TakeElement();
+                token = Lexer.TakeElement();
                 SyntaxTreeNode gram_a = Gram_A();
-                if (Lexer.CurrentElement.Type == TokenType.SpecialToken && Lexer.CurrentElement.Content == "∧")
+                token = Lexer.CurrentElement;
+                if (token.Type == TokenType.SpecialToken && token.Content == "∧")
                 {
                     SyntaxTreeNode gram_c = Gram_C();
                     return new("C", null, conjunction, gram_a, gram_c);
@@ -151,6 +153,7 @@ namespace TranslatorLib
                 SyntaxTreeNode opening_bracket = new("OpeningBracket", token);
                 Lexer.TakeElement();
                 SyntaxTreeNode gram_d = Gram_D();
+                token = Lexer.CurrentElement;
                 SyntaxTreeNode closing_bracket = new("ClosingBracket", token);
                 Lexer.TakeElement();
                 return new("A", null, opening_bracket, gram_d, closing_bracket);
