@@ -103,7 +103,7 @@ namespace TranslatorExplorer
             {
                 using StringReader reader = new(SourceRichTextBox.Text);
 
-                //SourceRichTextBox.Rtf = SourceClearTemplate.Render(SourceRichTextBox.Text);
+                SourceRichTextBox.Rtf = SourceClearTemplate.Render(SourceRichTextBox.Text);
                 SourceRichTextBox.SelectionColor = Color.Black;
 
                 HashTableList hashTables = new();
@@ -133,7 +133,7 @@ namespace TranslatorExplorer
                 SourceRichTextBox.Select(
                     SourceRichTextBox.GetFirstCharIndexFromLine(location.Line - 1)
                     + location.Column - 1, 1);
-                //SourceRichTextBox.SelectedRtf = SourceFormattingTemplate.Render(SourceRichTextBox.SelectedText);
+                SourceRichTextBox.SelectedRtf = SourceFormattingTemplate.Render(SourceRichTextBox.SelectedText);
                 SourceRichTextBox.SelectionColor = Color.Red;
             }
             catch (SyntaxAnalyzerException exc)
@@ -146,7 +146,7 @@ namespace TranslatorExplorer
                 SourceRichTextBox.Select(
                     SourceRichTextBox.GetFirstCharIndexFromLine(location.Line - 1)
                     + location.Begin.Column - 1, !exc.EndOfFile ? location.Length : 1);
-                //SourceRichTextBox.SelectedRtf = SourceFormattingTemplate.Render(SourceRichTextBox.SelectedText);
+                SourceRichTextBox.SelectedRtf = SourceFormattingTemplate.Render(SourceRichTextBox.SelectedText);
                 SourceRichTextBox.SelectionColor = Color.Red;
             }
             catch (Exception exc)
