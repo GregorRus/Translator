@@ -98,6 +98,8 @@ namespace TranslatorExplorer
             {
                 using StringReader reader = new(SourceRichTextBox.Text);
 
+                SourceRichTextBox.SelectionColor = Color.Black;
+
                 HashTableList hashTables = new();
 
                 ResultRichTextBox.Text = ProcessComboBox.SelectedItem switch
@@ -115,9 +117,35 @@ namespace TranslatorExplorer
                 StageToolStripStatusLabel.Text = "Работа выполнена без ошибок";
                 StageStatusStrip.BackColor = Color.FromArgb(0xFF, 0xB1, 0xFF, 0x54);
             }
-            catch (Exception exc)
+            catch (LexerException exc)
             {
                 StageToolStripStatusLabel.Text = "Есть ошибка";
+                StageStatusStrip.BackColor = Color.FromArgb(0xFF, 0xFF, 0x5C, 0x52);
+                ResultRichTextBox.Text = $"LexerException:\n{exc.Message}";
+
+                LiterLocation location = exc.Liter.Location;
+                SourceRichTextBox.Select(
+                    SourceRichTextBox.GetFirstCharIndexFromLine(location.Line - 1)
+                    + location.Column - 1, 1);
+                //SourceRichTextBox.SelectedRtf = SourceFormattingTemplate.Render(SourceRichTextBox.SelectedText);
+                SourceRichTextBox.SelectionColor = Color.Red;
+            }
+            catch (SyntaxAnalyzerException exc)
+            {
+                StageToolStripStatusLabel.Text = "Есть ошибка";
+                StageStatusStrip.BackColor = Color.FromArgb(0xFF, 0xFF, 0x5C, 0x52);
+                ResultRichTextBox.Text = $"SyntaxAnalyzerException:\n{exc.Message}";
+
+                TokenLocation location = exc.Token.Location;
+                SourceRichTextBox.Select(
+                    SourceRichTextBox.GetFirstCharIndexFromLine(location.Line - 1)
+                    + location.Begin.Column - 1, !exc.EndOfFile ? location.Length : 1);
+                //SourceRichTextBox.SelectedRtf = SourceFormattingTemplate.Render(SourceRichTextBox.SelectedText);
+                SourceRichTextBox.SelectionColor = Color.Red;
+            }
+            catch (Exception exc)
+            {
+                StageToolStripStatusLabel.Text = "Есть ошибка выполнения";
                 StageStatusStrip.BackColor = Color.FromArgb(0xFF, 0xFF, 0x5C, 0x52);
                 ResultRichTextBox.Text = $"Exception:\n{exc}";
             }

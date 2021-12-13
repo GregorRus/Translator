@@ -115,7 +115,7 @@ namespace TranslatorLib
                 }
                 return new("B", null, disjunction, gram_k);
             }
-            throw new Exception($"Invalid syntax for B, expected ∨, actually {Lexer.CurrentElement}");
+            throw new SyntaxAnalyzerException(token, "∨");
         }
 
         private SyntaxTreeNode Gram_C()
@@ -134,7 +134,7 @@ namespace TranslatorLib
                 }
                 return new("C", null, conjunction, gram_a);
             }
-            throw new Exception($"Invalid syntax for C, expected ∧, actually {Lexer.CurrentElement}");
+            throw new SyntaxAnalyzerException(token, "∧");
         }
 
         private SyntaxTreeNode Gram_A()
@@ -182,7 +182,7 @@ namespace TranslatorLib
                     }
                 }
             }
-            throw new Exception("Invalid syntax for O");
+            throw new SyntaxAnalyzerException(token, "Invalid syntax for O");
         }
     }
 }

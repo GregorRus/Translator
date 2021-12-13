@@ -46,6 +46,10 @@ namespace TranslatorLib
             End = end;
         }
 
+        public int Length => End.Column - Begin.Column + 1;
+
+        public int Line => Begin.Line;
+
         public override string ToString()
         {
             return $"{Begin}-{End}";
@@ -147,7 +151,7 @@ namespace TranslatorLib
 
                     case LiterType.Prohibited:
                     case LiterType.Other:
-                        throw new NotImplementedException($"Unsupported character '{liter.SanitizedCharacter}' at {liter.Location}.");
+                        throw new LexerException(liter);
 
                     default:
                         notPrepared = false;
@@ -177,7 +181,7 @@ namespace TranslatorLib
                     return CurrentElement;
 
             }
-            throw new NotImplementedException($"Unsupported character '{liter.SanitizedCharacter}' at {liter.Location}.");
+            throw new LexerException(liter);
         }
 
         private Token ProcessConstantToken()
@@ -260,7 +264,7 @@ namespace TranslatorLib
                     currentLiter = Transliterator.TakeElement();
                     goto D;
                 default:
-                    throw new Exception($"Invalid liter {currentLiter}, expected '0' or '1'.");
+                    throw new LexerException(currentLiter, "'0' or '1'");
             }
 
         B:
@@ -274,7 +278,7 @@ namespace TranslatorLib
             }
             else
             {
-                throw new Exception($"Invalid liter {currentLiter}, expected '1'.");
+                throw new LexerException(currentLiter, "'1'");
             }
 
         C:
@@ -288,7 +292,7 @@ namespace TranslatorLib
             }
             else
             {
-                throw new Exception($"Invalid liter {currentLiter}, expected '0'.");
+                throw new LexerException(currentLiter, "'0'");
             }
 
         D:
@@ -302,7 +306,7 @@ namespace TranslatorLib
             }
             else
             {
-                throw new Exception($"Invalid liter {currentLiter}, expected '1'.");
+                throw new LexerException(currentLiter, "'1'");
             }
 
         E:
@@ -316,7 +320,7 @@ namespace TranslatorLib
             }
             else
             {
-                throw new Exception($"Invalid liter {currentLiter}, expected '0'.");
+                throw new LexerException(currentLiter, "'0'");
             }
 
         F_Fin:
@@ -330,7 +334,7 @@ namespace TranslatorLib
             }
             else if (currentLiter.Type == LiterType.Digit)
             {
-                throw new Exception($"Invalid liter {currentLiter}, expected '1'.");
+                throw new LexerException(currentLiter, "'1'");
             }
             else
             {
@@ -349,7 +353,7 @@ namespace TranslatorLib
             }
             else
             {
-                throw new Exception($"Invalid liter {currentLiter}, expected '1'.");
+                throw new LexerException(currentLiter, "'1'");
             }
 
         H:
@@ -363,7 +367,7 @@ namespace TranslatorLib
             }
             else
             {
-                throw new Exception($"Invalid liter {currentLiter}, expected '1'.");
+                throw new LexerException(currentLiter, "'1'");
             }
 
         }
@@ -457,7 +461,7 @@ namespace TranslatorLib
                     currentLiter = Transliterator.TakeElement();
                     goto B_Fin;
                 default:
-                    throw new Exception($"Invalid liter {currentLiter}, expected 'a', 'b', 'c' or 'd'.");
+                    throw new LexerException(currentLiter, "'a', 'b', 'c' or 'd'");
             }
 
         B_Fin:
@@ -486,7 +490,7 @@ namespace TranslatorLib
                         currentLiter = Transliterator.TakeElement();
                         goto B_Fin;
                     default:
-                        throw new Exception($"Invalid liter {currentLiter}, expected 'a', 'b', 'c' or 'd'.");
+                        throw new LexerException(currentLiter, "'a', 'b', 'c' or 'd'");
                 }
             }
             else
@@ -516,7 +520,7 @@ namespace TranslatorLib
                         currentLiter = Transliterator.TakeElement();
                         goto C_Fin;
                     default:
-                        throw new Exception($"Invalid liter {currentLiter}, expected 'a', 'b', or 'c'.");
+                        throw new LexerException(currentLiter, "'a', 'b', or 'c'");
                 }
             }
             else
@@ -541,7 +545,7 @@ namespace TranslatorLib
                         currentLiter = Transliterator.TakeElement();
                         goto D_Fin;
                     default:
-                        throw new Exception($"Invalid liter {currentLiter}, expected 'a', or 'b'.");
+                        throw new LexerException(currentLiter, "'a', or 'b'");
                 }
             }
             else
@@ -570,7 +574,7 @@ namespace TranslatorLib
                 }
                 else
                 {
-                    throw new Exception($"Invalid liter {currentLiter}, expected 'a'.");
+                    throw new LexerException(currentLiter, "'a'");
                 }
             }
             else
@@ -616,7 +620,7 @@ namespace TranslatorLib
                 }
                 else if (liter.Type == LiterType.Delimeter && liter.Character == '\0')
                 {
-                    throw new Exception("Unexpected EOF");
+                    throw new LexerException(liter);
                 }
             }
         }
