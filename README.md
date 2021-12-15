@@ -1,5 +1,5 @@
 # Translator
-Учебные проект по разработк транслятора.
+Учебные проект по разработке транслятора.
 
 ## Структура проекта
 * Translator - Интерфейс командной строки транслятора.
@@ -12,5 +12,5 @@
   - [SyntaxAnalyzer.cs](TranslatorLib/SyntaxAnalyzer.cs) - Синтаксический анализатор.
   - [HashTable.cs](TranslatorLib/HashTable.cs) - Хэш-таблицы.
   - [Stage.cs](TranslatorLib/Stage.cs) - Вспомогательные интерфейсы для компонетов-этапов.
-  - [TranslatorExceptions.cs](TranslatorLib/TranslatorExceptions.cs) - Вспомогательные классы-исключения для ошибок трансляции.
+  - [TranslatorExceptions.cs](TranslatorLib/TranslatorException.cs) - Вспомогательные классы-исключения для ошибок трансляции.
 
