@@ -182,7 +182,7 @@ namespace TranslatorLib
                     }
                 }
             }
-            throw new SyntaxAnalyzerException(token, "Invalid syntax for O");
+            throw new SyntaxAnalyzerException(token);
         }
     }
 }
