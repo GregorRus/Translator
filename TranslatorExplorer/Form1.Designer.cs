@@ -174,7 +174,8 @@ namespace TranslatorExplorer
             "Transliterator",
             "Lexer",
             "Syntax Analyzer",
-            "Context Analyzer"});
+            "Context Analyzer",
+            "Generator"});
             this.ProcessComboBox.Location = new System.Drawing.Point(3, 6);
             this.ProcessComboBox.Name = "ProcessComboBox";
             this.ProcessComboBox.Size = new System.Drawing.Size(151, 28);

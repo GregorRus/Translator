@@ -11,8 +11,11 @@ namespace TranslatorLib
 
         public ContextNode? Parent { get; private set; }
 
-        public ContextNode(SyntaxTreeNode underlyingSyntaxNode, ContextNode[] childs)
+        public object? Value { get; init; }
+
+        public ContextNode(object? value, SyntaxTreeNode underlyingSyntaxNode, ContextNode[] childs)
         {
+            Value = value;
             UnderlyingSyntaxNode = underlyingSyntaxNode;
             Childs = childs;
             foreach (var child in Childs)
@@ -21,9 +24,13 @@ namespace TranslatorLib
             }
         }
 
+        public string Name => UnderlyingSyntaxNode.Name;
+
+        public bool HasSingleToken => UnderlyingSyntaxNode.HasSingleToken;
+
         public override string ToString()
         {
-            return $"{UnderlyingSyntaxNode.Name}: {UnderlyingSyntaxNode.UnderlyingToken?.ToString()} ({Childs.Length})";
+            return $"{Name}: {UnderlyingSyntaxNode.UnderlyingToken?.ToString()} ({Childs.Length})";
         }
     }
 
@@ -52,6 +59,8 @@ namespace TranslatorLib
         private ContextNode ProcessNode(SyntaxTreeNode syntaxNode)
         {
             Token? token = syntaxNode.UnderlyingToken;
+            object? value = token?.SanitizedContent;
+
             if (token != null)
             {
                 switch (token.Type)
@@ -65,6 +74,7 @@ namespace TranslatorLib
                         break;
                     case TokenType.ConstantToken:
                         HashTableList.PrimaryHashTable.TryAddItem(token.Content, token);
+                        value = Convert.ToInt32(token.Content, 2);
                         break;
                     case TokenType.SpecialToken:
                         HashTableList.SignHashTable.TryAddItem(token.Content, token);
@@ -73,7 +83,7 @@ namespace TranslatorLib
             }
 
             var newChilds = from child in syntaxNode.Childs select ProcessNode(child);
-            return new ContextNode(syntaxNode, newChilds.ToArray());
+            return new ContextNode(value, syntaxNode, newChilds.ToArray());
         }
     }
 }

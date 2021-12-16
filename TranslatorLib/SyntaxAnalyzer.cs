@@ -52,6 +52,8 @@ namespace TranslatorLib
 
         public Token? UnderlyingToken { get; init; }
 
+        public bool HasSingleToken => UnderlyingToken != null && Childs.Length == 0;
+
         public override string ToString()
         {
             return $"{Name}: {UnderlyingToken?.ToString()} ({Childs.Length})";
