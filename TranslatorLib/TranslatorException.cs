@@ -2,15 +2,15 @@
 
 namespace TranslatorLib
 {
-    public class TranslatorException : Exception
+    public abstract class TranslatorException : Exception
     {
         public string? Expected { get; init; }
 
-        public TranslatorException(string? message) : base(message)
+        protected TranslatorException(string? message) : base(message)
         {
         }
 
-        public TranslatorException(string? message, string expected) : base(message)
+        protected TranslatorException(string? message, string expected) : base(message)
         {
             Expected = expected;
         }
@@ -40,18 +40,33 @@ namespace TranslatorLib
         public Token Token { get; init; }
 
         public SyntaxAnalyzerException(Token token)
-            : base($"Invalid syntax for C at token '{token.SanitizedContent}' at {token.Location}")
+            : base($"Invalid syntax for C at token '{token.SanitizedContent}' at {token.Location}.")
         {
             Token = token;
         }
 
         public SyntaxAnalyzerException(Token token, string expected)
-            : base($"Invalid syntax for C, expected {expected}, actually '{token.SanitizedContent}' at {token.Location}", expected)
+            : base($"Invalid syntax for C, expected {expected}, actually '{token.SanitizedContent}' at {token.Location}.", expected)
         {
             Token = token;
             Expected = expected;
         }
 
         public bool EndOfFile => Token.IsLast();
+    }
+
+    public class ContextAnalyzerException : TranslatorException
+    {
+        public SyntaxTreeNode SyntaxTreeNode { get; init; }
+
+        public ContextAnalyzerException(SyntaxTreeNode syntaxTreeNode) : base($"Invalid expression at {syntaxTreeNode}.")
+        {
+            SyntaxTreeNode = syntaxTreeNode;
+        }
+
+        public ContextAnalyzerException(SyntaxTreeNode syntaxTreeNode, string reason) : base($"Invalid expression at {syntaxTreeNode}, by reason {reason}.")
+        {
+            SyntaxTreeNode = syntaxTreeNode;
+        }
     }
 }
