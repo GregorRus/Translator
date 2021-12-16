@@ -22,6 +22,7 @@
  *  SOFTWARE.
  */
 
+using System;
 using System.IO;
 
 using TranslatorLib;
@@ -41,7 +42,9 @@ namespace Translator
             Lexer lexer = new(transliterator);
             SyntaxAnalyzer syntaxAnalyzer = new(lexer);
             ContextAnalyzer contextAnalyzer = new(syntaxAnalyzer, hashTables);
+            Generator generator = new(contextAnalyzer);
 
+            Console.WriteLine(generator.GetResult());
         }
     }
 }
