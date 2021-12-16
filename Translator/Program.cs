@@ -22,7 +22,6 @@
  *  SOFTWARE.
  */
 
-using System;
 using System.IO;
 
 using TranslatorLib;
@@ -39,14 +38,10 @@ namespace Translator
             HashTableList hashTables = new();
 
             Transliterator transliterator = new(streamReader);
-            Lexer lexer = new(transliterator, hashTables);
+            Lexer lexer = new(transliterator);
+            SyntaxAnalyzer syntaxAnalyzer = new(lexer);
+            ContextAnalyzer contextAnalyzer = new(syntaxAnalyzer, hashTables);
 
-            for (var liter = lexer.TakeElement();
-                liter.Type != TokenType.EndOfFile;
-                liter = lexer.TakeElement())
-            {
-                Console.WriteLine(liter);
-            }
         }
     }
 }
