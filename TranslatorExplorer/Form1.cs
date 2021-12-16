@@ -121,7 +121,7 @@ namespace TranslatorExplorer
             {
                 StageToolStripStatusLabel.Text = "Есть ошибка";
                 StageStatusStrip.BackColor = Color.FromArgb(0xFF, 0xFF, 0x5C, 0x52);
-                ResultRichTextBox.Text = $"LexerException:\n{exc.Message}";
+                ResultRichTextBox.Text = $"{nameof(LexerException)}:\n{exc.Message}";
 
                 LiterLocation location = exc.Liter.Location;
                 SourceRichTextBox.Select(
@@ -133,7 +133,7 @@ namespace TranslatorExplorer
             {
                 StageToolStripStatusLabel.Text = "Есть ошибка";
                 StageStatusStrip.BackColor = Color.FromArgb(0xFF, 0xFF, 0x5C, 0x52);
-                ResultRichTextBox.Text = $"SyntaxAnalyzerException:\n{exc.Message}";
+                ResultRichTextBox.Text = $"{nameof(SyntaxAnalyzerException)}:\n{exc.Message}";
 
                 TokenLocation location = exc.Token.Location;
                 SourceRichTextBox.Select(
@@ -145,7 +145,7 @@ namespace TranslatorExplorer
             {
                 StageToolStripStatusLabel.Text = "Есть ошибка выполнения";
                 StageStatusStrip.BackColor = Color.FromArgb(0xFF, 0xFF, 0x5C, 0x52);
-                ResultRichTextBox.Text = $"Exception:\n{exc}";
+                ResultRichTextBox.Text = $"{nameof(Exception)}:\n{exc}";
             }
         }
 
