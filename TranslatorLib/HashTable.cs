@@ -104,6 +104,17 @@ namespace TranslatorLib
             }
         }
 
+        public bool HasKey(string Key, int khash)
+        {
+            if (khash != KeyHash)
+            {
+                throw new ArgumentException("Invalid key hash");
+            }
+
+            HashTableItem? item = GetItemUnchecked(Key, khash);
+            return item != null;
+        }
+
         public IEnumerator<HashTableItem> GetEnumerator()
         {
             return ((IEnumerable<HashTableItem>)Items).GetEnumerator();
@@ -169,6 +180,13 @@ namespace TranslatorLib
             int keyHash = CalculateHash(Key);
             _ = Sublists.TryGetValue(keyHash, out HashTableSubList? sublist);
             sublist?.RemoveItem(Key, keyHash);
+        }
+
+        public bool HasKey(string Key)
+        {
+            int keyHash = CalculateHash(Key);
+            _ = Sublists.TryGetValue(keyHash, out HashTableSubList? sublist);
+            return sublist?.HasKey(Key, keyHash) ?? false;
         }
 
         IEnumerator<HashTableItem> IEnumerable<HashTableItem>.GetEnumerator()
