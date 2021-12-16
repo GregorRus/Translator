@@ -108,6 +108,7 @@ namespace TranslatorExplorer
                     "Lexer" => ProcessFullText(new Lexer(new(reader))),
                     "Syntax Analyzer" => ProcessFullTree(new SyntaxAnalyzer(new(new(reader)))),
                     "Context Analyzer" => ProcessFullTree(new ContextAnalyzer(new(new(new(reader))), hashTables)),
+                    "Generator" => new Generator(new(new(new(new(reader))), hashTables)).GetResult(),
                     _ => throw new NotImplementedException()
                 };
 
@@ -183,6 +184,7 @@ namespace TranslatorExplorer
                 case "Lexer":
                 case "Syntax Analyzer":
                 case "Context Analyzer":
+                case "Generator":
                     foreach (Token el in Elements)
                     {
                         if (el.Location.Begin.Line <= line
