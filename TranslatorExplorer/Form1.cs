@@ -105,8 +105,9 @@ namespace TranslatorExplorer
                 ResultRichTextBox.Text = ProcessComboBox.SelectedItem switch
                 {
                     "Transliterator" => ProcessFullText(new Transliterator(reader)),
-                    "Lexer" => ProcessFullText(new Lexer(new(reader), hashTables)),
-                    "Syntax Analyzer" => ProcessFullTree(new SyntaxAnalyzer(new(new(reader), hashTables))),
+                    "Lexer" => ProcessFullText(new Lexer(new(reader))),
+                    "Syntax Analyzer" => ProcessFullTree(new SyntaxAnalyzer(new(new(reader)))),
+                    "Context Analyzer" => ProcessFullTree(new ContextAnalyzer(new(new(new(reader))), hashTables)),
                     _ => throw new NotImplementedException()
                 };
 
@@ -141,6 +142,14 @@ namespace TranslatorExplorer
                     + location.Begin.Column - 1, !exc.EndOfFile ? location.Length : 1);
                 SourceRichTextBox.SelectionColor = Color.Red;
             }
+            catch (ContextAnalyzerException exc)
+            {
+                StageToolStripStatusLabel.Text = "Есть ошибка";
+                StageStatusStrip.BackColor = Color.FromArgb(0xFF, 0xFF, 0x5C, 0x52);
+                ResultRichTextBox.Text = $"{nameof(ContextAnalyzerException)}:\n{exc.Message}";
+
+
+            }
             catch (Exception exc)
             {
                 StageToolStripStatusLabel.Text = "Есть ошибка выполнения";
@@ -168,6 +177,8 @@ namespace TranslatorExplorer
                     }
                     return;
                 case "Lexer":
+                case "Syntax Analyzer":
+                case "Context Analyzer":
                     foreach (Token el in Elements)
                     {
                         if (el.Location.Begin.Line <= line
@@ -179,8 +190,6 @@ namespace TranslatorExplorer
                             return;
                         }
                     }
-                    return;
-                case "Syntax Analyzer":
                     return;
             }
         }
