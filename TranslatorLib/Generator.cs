@@ -45,7 +45,7 @@ namespace TranslatorLib
                     {
                         ++level;
                     }
-                    if (node.Childs.FirstOrDefault()?.Name == "OpeningBrackets")
+                    if (node.Childs.FirstOrDefault()?.Name == "OpeningBracket")
                     {
                         --level;
                     }
