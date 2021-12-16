@@ -148,7 +148,11 @@ namespace TranslatorExplorer
                 StageStatusStrip.BackColor = Color.FromArgb(0xFF, 0xFF, 0x5C, 0x52);
                 ResultRichTextBox.Text = $"{nameof(ContextAnalyzerException)}:\n{exc.Message}";
 
-
+                TokenLocation location = exc.SyntaxTreeNode.UnderlyingToken.Location;
+                SourceRichTextBox.Select(
+                    SourceRichTextBox.GetFirstCharIndexFromLine(location.Line - 1)
+                    + location.Begin.Column - 1, !exc.EndOfFile ? location.Length : 1);
+                SourceRichTextBox.SelectionColor = Color.Red;
             }
             catch (Exception exc)
             {

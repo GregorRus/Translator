@@ -68,5 +68,7 @@ namespace TranslatorLib
         {
             SyntaxTreeNode = syntaxTreeNode;
         }
+
+        public bool EndOfFile => SyntaxTreeNode.UnderlyingToken?.IsLast() ?? false;
     }
 }
