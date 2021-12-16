@@ -89,17 +89,15 @@ namespace TranslatorLib
     public class Lexer : IStage<Token>
     {
         private readonly Transliterator Transliterator;
-        private readonly HashTableList HashTableList;
 
         private Token? CurrentToken;
 
         public Token CurrentElement => CurrentToken ?? throw new InvalidOperationException("Invalid operation performed: no available current element before TakeElement call.");
 
-        public Lexer(Transliterator transliterator, HashTableList hashTableList)
+        public Lexer(Transliterator transliterator)
         {
             Transliterator = transliterator;
             transliterator.TakeElement();
-            HashTableList = hashTableList;
         }
 
         public Token TakeElement()
@@ -167,17 +165,14 @@ namespace TranslatorLib
             {
                 case LiterType.Letter:
                     CurrentToken = ProcessIdentifierToken();
-                    HashTableList.SecondaryHashTable.TryAddItem(CurrentToken.Content, CurrentToken.Content);
                     return CurrentElement;
 
                 case LiterType.Digit:
                     CurrentToken = ProcessConstantToken();
-                    HashTableList.PrimaryHashTable.TryAddItem(CurrentToken.Content, CurrentToken.Content);
                     return CurrentElement;
 
                 case LiterType.Special:
                     CurrentToken = ProcessSpecialToken();
-                    HashTableList.SignHashTable.TryAddItem(CurrentToken.Content, CurrentToken.Content);
                     return CurrentElement;
 
             }
